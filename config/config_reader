@@ -32,4 +32,7 @@ then
 elif [ "$1" == 10 ]
 then
    echo -n $(grep "Target Threshold:" $config | awk -F ":" '{print $2}')
+elif [ "$1" == 11 ]
+then
+   echo -n $(grep "Wrapup Frequency:" $config | awk -F ":" '{print $2}')
 fi
