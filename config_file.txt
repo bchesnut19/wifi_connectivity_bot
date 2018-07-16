@@ -1,0 +1,5 @@
+Config File:
+# Account to be tweeted at when ergegious connectivity exists
+Twitter Destination:<INSERT HERE>
+# API Key for Twitter
+Key:<INSERT HERE>
