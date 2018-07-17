@@ -3,6 +3,7 @@
 import socket
 import fcntl
 import struct
+import os
 
 #FUNCTIONS:
 ###########
@@ -55,6 +56,9 @@ file_setting
 ether='eth0'
 print get_ip_address("eth0")
 wifi='wlan0'
-
+#os.system("ifdown HTHomeId > /dev/null")
 boolEther= check_connectivity_status(ether)
+#os.system("ifup HTHomeId > /dev/null")
+#os.system("ifdown eth0 > /dev/null")
 boolWifi= check_connectivity_status(wifi)
+#os.system("ifup eth0 > /dev/null")
