@@ -4,15 +4,18 @@ import socket
 import fcntl
 import struct
 import os
+import subprocess
+import time
+
+#GLOBAL VARS:
+#############
+configFile = open("config_file.txt","r")
+logFile = open("record-keeping/log_file.txt","a+")
+etherCSV = open("record-keeping/up_down_eth.csv","a+")
+wifiCSV = open("record-keeping/up_down_wifi.csv","a+")
 
 #FUNCTIONS:
 ###########
-
-# sets files used in program
-def file_setting():
-   configFile = open("config_file.txt","r");
-   logFile = open("record-keeping/log_file.txt","w");
-   csvFile = open("record-keeping/up_down.csv","w");
 
 # gets ip for interface
 def get_ip_address(ifname):
@@ -24,15 +27,31 @@ def get_ip_address(ifname):
    )[20:24])
 
 # network up status, accepts hardware item used as arg
-def check_connectivity_status(hardware):
+def check_connectivity_status(hardware,etherBool):
    googleBool=check_site_helper(hardware, 'google.com')
    bingBool=check_site_helper(hardware,'bing.com')
    faceBool=check_site_helper(hardware,'facebook.com')
    if googleBool==0 or bingBool==0 or faceBool==0:
       print hardware,"is currently active."
+      if etherBool==0:
+         updateCSV = subprocess.check_output(["./shell-helpers/current_eth_status 0"], shell=True)
+         print updateCSV
+         if updateCSV=="1":
+            global etherCSV
+            #timeValue = time.localtime()
+            toWrite = "ONLINE,"+"1"
+            etherCSV.write(toWrite)
+      else:
+         updateCSV = subprocess.check_output(["./shell-helpers/current_wifi_status 0"], shell=True)
+         print updateCSV
+         if updateCSV=="1":
+            global wifiCSV
+            #timeValue = time.localtime()
+            toWrite="ONLINE,"+"1"
+            wifiCSV.write(toWrite)
       return 0
    else:
-      print hardware,"is down"
+      print hardware,"is down"      
       return 1
 
 # check ethernet helper, accepts hostname addresses
@@ -52,13 +71,12 @@ def check_site_helper(hardware,address):
 #MAIN:
 ######
 
-file_setting
 ether='eth0'
 print get_ip_address("eth0")
 wifi='wlan0'
 os.system("ifdown HTHomeId > /dev/null")
-boolEther= check_connectivity_status(ether)
+boolEther= check_connectivity_status(ether,0)
 os.system("ifup HTHomeId > /dev/null")
-os.system("ifdown eth0 > /dev/null")
-boolWifi= check_connectivity_status(wifi)
+os.system("ifdown eth0 >/dev/null")
+boolWifi= check_connectivity_status(wifi,1)
 os.system("ifup eth0 > /dev/null")
