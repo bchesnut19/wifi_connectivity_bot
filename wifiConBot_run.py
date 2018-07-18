@@ -5,14 +5,14 @@ import fcntl
 import struct
 import os
 import subprocess
-import time
+from time import gmtime, strftime
 
 #GLOBAL VARS:
 #############
-configFile = open("config_file.txt","r")
-logFile = open("record-keeping/log_file.txt","a+")
-etherCSV = open("record-keeping/up_down_eth.csv","a+")
-wifiCSV = open("record-keeping/up_down_wifi.csv","a+")
+configFile = open("/usr/local/projects/wifi_connectivity_bot/config_file.txt","r")
+logFile = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/log_file.txt","a+")
+etherCSV = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_eth.csv","a+")
+wifiCSV = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_wifi.csv","a+")
 
 #FUNCTIONS:
 ###########
@@ -34,37 +34,29 @@ def check_connectivity_status(hardware,etherBool):
    if googleBool==0 or bingBool==0 or faceBool==0:
       print hardware,"is currently active."
       if etherBool==0:
-         matchesStatus = subprocess.check_output(["./shell-helpers/current_eth_status 0"], shell=True)
-         print matchesStatus
+         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_eth_status 0"], shell=True)
          if matchesStatus=="1":
-            #global etherCSV
             # need to add values for time
             toWrite = "ONLINE,"+"1"
             etherCSV.write(toWrite)
       else:
-         matchesStatus = subprocess.check_output(["./shell-helpers/current_wifi_status 0"], shell=True)
-         print matchesStatus
+         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_wifi_status 0"], shell=True)
          if matchesStatus=="1":
-            #global wifiCSV
             # need to add values for time
-            toWrite="ONLINE,"+"1"
+            toWrite="ONLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
             wifiCSV.write(toWrite)
       return 0
    else:
       print hardware,"is down"
       if etherBool==0:
-         matchesStatus = subprocess.check_output(["./shell-helpers/current_eth_status 1"], shell=True)
-         print matchesStatus
+         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_eth_status 1"], shell=True)
          if matchesStatus=="1":
-            #global etherCSV
             # need to add values for time
             toWrite = "OFFLINE,"+"1"
             etherCSV.write(toWrite)
       else:
-         matchesStatus = subprocess.check_output("./shell-helpers/current_wifi_status 1", shell=True)
-         print matchesStatus
+         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_wifi_status 1"], shell=True)
          if matchesStatus=="1":
-            #global wifiCSV
             # need to add values for time
             toWrite = "OFFLINE,"+"1"
             wifiCSV.write(toWrite)
@@ -98,3 +90,11 @@ os.system("ifup HTHomeId > /dev/null")
 os.system("ifdown eth0 >/dev/null")
 boolWifi= check_connectivity_status(wifi,1)
 os.system("ifup eth0 > /dev/null")
+print boolEther 
+print boolWifi
+if boolEther==0 and boolWifi==0:
+   toWrite = "\nSuccessful run: " + strftime("%Y-%m-%d %H:%M:%S", gmtime())
+   logFile.write(toWrite)
+else:
+   toWrite = "\nFAILURES DETECTED: " + strftime("%Y-%m-%d %H:%M:%S", gmtime())
+   logFile.write(toWrite)
