@@ -34,24 +34,40 @@ def check_connectivity_status(hardware,etherBool):
    if googleBool==0 or bingBool==0 or faceBool==0:
       print hardware,"is currently active."
       if etherBool==0:
-         updateCSV = subprocess.check_output(["./shell-helpers/current_eth_status 0"], shell=True)
-         print updateCSV
-         if updateCSV=="1":
-            global etherCSV
-            #timeValue = time.localtime()
+         matchesStatus = subprocess.check_output(["./shell-helpers/current_eth_status 0"], shell=True)
+         print matchesStatus
+         if matchesStatus=="1":
+            #global etherCSV
+            # need to add values for time
             toWrite = "ONLINE,"+"1"
             etherCSV.write(toWrite)
       else:
-         updateCSV = subprocess.check_output(["./shell-helpers/current_wifi_status 0"], shell=True)
-         print updateCSV
-         if updateCSV=="1":
-            global wifiCSV
-            #timeValue = time.localtime()
+         matchesStatus = subprocess.check_output(["./shell-helpers/current_wifi_status 0"], shell=True)
+         print matchesStatus
+         if matchesStatus=="1":
+            #global wifiCSV
+            # need to add values for time
             toWrite="ONLINE,"+"1"
             wifiCSV.write(toWrite)
       return 0
    else:
-      print hardware,"is down"      
+      print hardware,"is down"
+      if etherBool==0:
+         matchesStatus = subprocess.check_output(["./shell-helpers/current_eth_status 1"], shell=True)
+         print matchesStatus
+         if matchesStatus=="1":
+            #global etherCSV
+            # need to add values for time
+            toWrite = "OFFLINE,"+"1"
+            etherCSV.write(toWrite)
+      else:
+         matchesStatus = subprocess.check_output("./shell-helpers/current_wifi_status 1", shell=True)
+         print matchesStatus
+         if matchesStatus=="1":
+            #global wifiCSV
+            # need to add values for time
+            toWrite = "OFFLINE,"+"1"
+            wifiCSV.write(toWrite)
       return 1
 
 # check ethernet helper, accepts hostname addresses
@@ -74,6 +90,8 @@ def check_site_helper(hardware,address):
 ether='eth0'
 print get_ip_address("eth0")
 wifi='wlan0'
+# system calls to close internet interfaces are necessary, or else stalls when attempting
+# to do connectivity checks on second interface checked
 os.system("ifdown HTHomeId > /dev/null")
 boolEther= check_connectivity_status(ether,0)
 os.system("ifup HTHomeId > /dev/null")
