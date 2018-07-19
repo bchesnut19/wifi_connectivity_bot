@@ -22,5 +22,4 @@ PLANS(*=critical functionality):
 -Add tweet functionality*
 -Implement config file*
 -Add functionality to update webpage with log files*
--Cleanup of check_connectivity_status
 -Attempting to remove bash script calls
