@@ -1,5 +1,6 @@
 README FOR WIFI CONNECTIVITY BOT:
 bchesnut19, 07/15/2018
+centOS 7
 
 Script begins with checking of the two interfaces on
 Raspberry Pi B+, and attempts to connect to different
@@ -11,10 +12,15 @@ csv files located in record-keeping/ dir. The python
 script uses a bash helper function for simple data
 processing, which allows the program to see if state
 of interface has changed since last runtime.
+	All processes performed by script are docume-
+nted in record-keeping/log_file.txt, along with time
+stamps of when operation occured. Errors are written
+to logfile as well.
 
-PLANS:
--More through log functionality
--Attempting to remove bash calls
--Add functionality to update webpage with log files
--Add tweet functionality
--Better encorporate config file functionality
+PLANS(*=critical functionality):
+-Tracking downtime*
+-Add tweet functionality*
+-Implement config file*
+-Add functionality to update webpage with log files*
+-Cleanup of check_connectivity_status
+-Attempting to remove bash script calls
