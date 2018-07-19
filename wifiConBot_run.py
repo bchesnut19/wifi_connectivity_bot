@@ -46,12 +46,12 @@ def check_connectivity_status(hardware,etherBool):
 # helper which deals shell calls and writing to logs
 def check_conn_helper(etherBool,connBool):
    toWrite=strftime("%S,%M,%H,%d,%m,%Y")
-   scriptCall="/usr/local/projects/wifi_connectivity/shell-helpers/"
-   if etherbool==0:
-      scriptCall = scriptCall+"current_eth_status "+connBool
+   scriptCall="/usr/local/projects/wifi_connectivity/shell-helpers/interface_csv_status"
+   if etherBool==0:
+      scriptCall = scriptCall+" "+connBool+ " " +etherBool
       matchesStatus = subprocess.check_output([scriptCall], shell=True)
    else:
-      scriptCall = scriptCall+"current_wifi_status "+connBool
+      scriptCall = scriptCall+" "+connBool+ " "+etherBool
       matchesStatus = subprocess.check_output([scriptCall],shell=True)
    if matchesStatus=="1":
       if etherBool==0:
