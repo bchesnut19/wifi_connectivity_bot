@@ -34,31 +34,40 @@ def check_connectivity_status(hardware,etherBool):
    if googleBool==0 or bingBool==0 or faceBool==0:
       toWrite=strftime("%H:%M:%S %m-%d-%Y",gmtime())+": "+hardware+" is active\n"
       logFile.write(toWrite)
-      if etherBool==0:
-         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_eth_status 0"], shell=True)
-         if matchesStatus=="1":
-            toWrite = "ONLINE,"+strftime("%S,%M,%H,%d,%m,%Y",gmtime())+"\n"
-            etherCSV.write(toWrite)
-      else:
-         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_wifi_status 0"], shell=True)
-         if matchesStatus=="1":
-            toWrite="ONLINE,"+strftime("%S,%M,%H,%d,%m,%Y",gmtime())+"\n"
-            wifiCSV.write(toWrite)
+      # calls helper with bool for device and device status
       return 0
    else:
       toWrite= strftime("%H:%M:%S %m-%d-%Y",gmtime())+": "+hardware+" is down\n"
       logFile.write(toWrite)
-      if etherBool==0:
-         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_eth_status 1"], shell=True)
-         if matchesStatus=="1":
-            toWrite = "OFFLINE,"+strftime("%S,%M,%H,%d,%m,%Y",gmtime())+"\n"
-            etherCSV.write(toWrite)
-      else:
-         matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_wifi_status 1"], shell=True)
-         if matchesStatus=="1":
-            toWrite = "OFFLINE,"+strftime("%S,%M,%H,%d,%m,%Y",gmtime())+"\n"
-            wifiCSV.write(toWrite)
+      # calls helper with bool for device and device status
+      check_conn_helper(etherBool,0)
       return 1
+
+# helper which deals shell calls and writing to logs
+def check_conn_helper(etherBool,connBool):
+   toWrite=strftime("%S,%M,%H,%d,%m,%Y")
+   scriptCall="/usr/local/projects/wifi_connectivity/shell-helpers/"
+   if etherbool==0:
+      scriptCall = scriptCall+"current_eth_status "+connBool
+      matchesStatus = subprocess.check_output([scriptCall], shell=True)
+   else:
+      scriptCall = scriptCall+"current_wifi_status "+connBool
+      matchesStatus = subprocess.check_output([scriptCall],shell=True)
+   if matchesStatus=="1":
+      if etherBool==0:
+         if connBool==0:
+            toWrite="ONLINE,"+toWrite
+            etherCSV.write(toWrite)
+         else:
+            toWrite="OFFLINE,"+toWrite
+            etherCSV.write(toWrite)
+   else:
+      if connBool==0:
+         toWrite="ONLINE,"+toWrite
+         wifiCSV.write(toWrite)
+      else:
+         toWrite="OFFLINE"+toWrite
+         wifiCSV.write(toWrite)
 
 # check ethernet helper, accepts hostname addresses
 def check_site_helper(hardware,address):
@@ -68,9 +77,6 @@ def check_site_helper(hardware,address):
    try:
       # attempts to connect to input address with 
       sock.connect((address, 80))
-      # commented out to reduce spam
-      #toWrite= "\n"+strftime("%H:%M:%S %m-%d-%y",gmtime())+": "+"Connected to "+address+" using " +hardware
-      #logFile.write(toWrite)
       return 0
    except socket.error as err:
       toWrite= strftime("%H:%M:%S %m-%d-%Y",gmtime())+": " + "Error with " +hardware + " in attempting to access " + address + "\n"
