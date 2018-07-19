@@ -68,8 +68,9 @@ def check_site_helper(hardware,address):
    try:
       # attempts to connect to input address with 
       sock.connect((address, 80))
-      toWrite= "\n"+strftime("%H:%M:%S %m-%d-%y",gmtime())+": "+"Connected to "+address+" using " +hardware
-      logFile.write(toWrite)
+      # commented out to reduce spam
+      #toWrite= "\n"+strftime("%H:%M:%S %m-%d-%y",gmtime())+": "+"Connected to "+address+" using " +hardware
+      #logFile.write(toWrite)
       return 0
    except socket.error as err:
       toWrite= "\n"+ strftime("%H:%M:%S %m-%d-%y",gmtime())+": " + "Error with " +hardware + " in attempting to access " + address
