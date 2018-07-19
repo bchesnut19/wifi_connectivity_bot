@@ -32,17 +32,17 @@ def check_connectivity_status(hardware,etherBool):
    bingBool=check_site_helper(hardware,'bing.com')
    faceBool=check_site_helper(hardware,'facebook.com')
    if googleBool==0 or bingBool==0 or faceBool==0:
-      toWrite= "\n"+strftime("%H:%M:%S %m-%d-%y",gmtime())+": "+hardware+" is active"
+      toWrite="\n"+strftime("%H:%M:%S %m-%d-%y",gmtime())+": "+hardware+" is active"
       logFile.write(toWrite)
       if etherBool==0:
          matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_eth_status 0"], shell=True)
          if matchesStatus=="1":
-            toWrite = "\nONLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
+            toWrite = "ONLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
             etherCSV.write(toWrite)
       else:
          matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_wifi_status 0"], shell=True)
          if matchesStatus=="1":
-            toWrite="\nONLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
+            toWrite="ONLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
             wifiCSV.write(toWrite)
       return 0
    else:
@@ -51,12 +51,12 @@ def check_connectivity_status(hardware,etherBool):
       if etherBool==0:
          matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_eth_status 1"], shell=True)
          if matchesStatus=="1":
-            toWrite = "\nOFFLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
+            toWrite = "OFFLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
             etherCSV.write(toWrite)
       else:
          matchesStatus = subprocess.check_output(["/usr/local/projects/wifi_connectivity_bot/shell-helpers/current_wifi_status 1"], shell=True)
          if matchesStatus=="1":
-            toWrite = "\nOFFLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
+            toWrite = "OFFLINE,"+strftime("%S,%M,%H,%d,%m,%y",gmtime())
             wifiCSV.write(toWrite)
       return 1
 
@@ -68,17 +68,18 @@ def check_site_helper(hardware,address):
    try:
       # attempts to connect to input address with 
       sock.connect((address, 80))
-      toWrite= "\n" +strftime("%H:%M:%S %m-%d-%y",gmtime())+": "+"Connected to "+address+" using " +hardware
+      toWrite= "\n"+strftime("%H:%M:%S %m-%d-%y",gmtime())+": "+"Connected to "+address+" using " +hardware
       logFile.write(toWrite)
       return 0
    except socket.error as err:
-      toWrite= "\n"+strftime("%H:%M:%S %m-%d-%y",gmtime())+": " + "Error with " +hardware + " in attempting to access " + address
+      toWrite= "\n"+ strftime("%H:%M:%S %m-%d-%y",gmtime())+": " + "Error with " +hardware + " in attempting to access " + address
       logFile.write(toWrite)
       return 1 
 
 #MAIN:
 ######
-
+toWrite=strftime("%H:%M:%S %m-%d-%Y",gmtime())+": " +"SCRIPT BEGINS"
+logFile.write(toWrite)
 ether='eth0'
 wifi='wlan0'
 # system calls to close internet interfaces are necessary, or else stalls when attempting
@@ -90,8 +91,8 @@ os.system("/sbin/ifdown eth0 >/dev/null")
 boolWifi= check_connectivity_status(wifi,1)
 os.system("/sbin/ifup eth0 > /dev/null")
 if boolEther==0 and boolWifi==0:
-   toWrite = "\n" + strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+" CONNECTIONS UP"
+   toWrite = "\n"+strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+" CONNECTIONS UP"
    logFile.write(toWrite)
 else:
-   toWrite = "\n"+ strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+" NETWORK FAILURES DETECTED"
+   toWrite ="\n"+ strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+" NETWORK FAILURES DETECTED"
    logFile.write(toWrite)
