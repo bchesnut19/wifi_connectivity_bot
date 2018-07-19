@@ -1,5 +1,12 @@
 #!/bin/bash
-csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_wifi.csv"
+# arg 1 = connected boolean, arg2 =ethernet boolean
+if [ "$2"=="0" ]
+then
+   csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_eth.csv"
+else
+   csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_wifi.csv"
+fi
+
 result="$(cat $csvFile | sed 1,2d | tail -1 | awk -F ',' '{print $1}')"
 if [ "$result" != "ONLINE" ] && [ "$result" != "OFFLINE" ] 
 then
