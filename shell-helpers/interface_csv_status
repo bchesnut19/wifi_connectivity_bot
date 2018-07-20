@@ -7,7 +7,7 @@ else
    csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_wifi.csv"
 fi
 
-result="$(cat $csvFile | sed 1,2d | tail -1 | awk -F ',' '{print $1}')"
+result="$(cat $csvFile | tail -n +3 | tail -1 | awk -F ',' '{print $1}')"
 if [ "$result" != "ONLINE" ] && [ "$result" != "OFFLINE" ] 
 then
    echo -n "1"
