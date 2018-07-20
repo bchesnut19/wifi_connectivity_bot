@@ -1,5 +1,18 @@
 #!/bin/bash
-# arg 1 = connected boolean, arg2 =ethernet boolean
+###########################################################################
+# Description:                                                            #
+# Reads from either eth connectivity record or wifi connectivity record.  #
+###########################################################################
+# Accepted args:                                                          # 
+# arg 1 = connected boolean(0 connection, 1 no connection),               #
+# arg2 = ethernet boolean                                                 #
+###########################################################################
+# Return Values:                                                          #
+# Returns 0 if current connectivity status contained in csv file is equal #
+# to connectivity arg input, else returns 1                               #
+###########################################################################
+
+# checks arg to determine csv file to write to
 if [ "$2"=="0" ]
 then
    csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_eth.csv"
@@ -7,10 +20,15 @@ else
    csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_wifi.csv"
 fi
 
-result="$(cat $csvFile | tail -n +3 | tail -1 | awk -F ',' '{print $1}')"
+# pipes csv file into two tail commands which first remove the first two lines,
+# then grabs the last line, and finally sets result to equal first field of line.
+result="$(cat $csvFile | tail --lines=+2 | tail -1 | awk -F ',' '{print $1}')"
+# if value grabbed does not equal either potential option, is either blank or is
+# invalid record, so the script returns 1
 if [ "$result" != "ONLINE" ] && [ "$result" != "OFFLINE" ] 
 then
    echo -n "1"
+# determines whether new entry needs to be made based on last log entry of file.
 elif [ "$1" == "0" ]
 then
    if [ "$result" == "OFFLINE" ]
