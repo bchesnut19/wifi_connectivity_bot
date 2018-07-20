@@ -1,4 +1,12 @@
 #!/usr/bin/python
+
+##########################################################################
+# Description:                                                           #
+# Main script for bot, determines whether network interfaces are online  #
+# Writes to log files information needed, and calls tweet script to deal #
+# with what it should do when wifi goes down.                            #
+##########################################################################
+
 # packages needed
 import socket
 import fcntl
@@ -17,16 +25,13 @@ wifiCSV = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down
 #FUNCTIONS:
 ###########
 
-# gets ip for interface
-def get_ip_address(ifname):
-   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-   return socket.inet_ntoa(fcntl.ioctl(
-      s.fileno(),
-      0x8915,
-      struct.pack('256s', ifname[:15])
-   )[20:24])
-
-# network up status, accepts hardware item used as arg
+# Description: finds network status on interface
+# Args: hardware = name of hardware interface, etherbool = int serving as
+# boolean indicating if interface is ethernet or wifi
+# Function Calls: calls check_site_helper, and check_conn_helper
+# Writes: logFile
+# Returns: int, 0 indicates connectivity on interface successful,
+# 1 indicates connectivity on interface unsuccessful
 def check_connectivity_status(hardware,etherBool):
    googleBool=check_site_helper(hardware, 'google.com')
    bingBool=check_site_helper(hardware,'bing.com')
@@ -35,15 +40,20 @@ def check_connectivity_status(hardware,etherBool):
       toWrite=strftime("%H:%M:%S %m-%d-%Y",gmtime())+": "+hardware+" is active\n"
       logFile.write(toWrite)
       # calls helper with bool for device and device status
+      check_conn_helper(etherBool,0)
       return 0
    else:
       toWrite= strftime("%H:%M:%S %m-%d-%Y",gmtime())+": "+hardware+" is down\n"
       logFile.write(toWrite)
       # calls helper with bool for device and device status
-      check_conn_helper(etherBool,0)
+      check_conn_helper(etherBool,1)
       return 1
 
-# helper which deals shell calls and writing to logs
+# Description: helper which deals shell calls and writing to logs
+# Args: etherbool = int serving as boolean indicating if interface is eth or
+# wifi, connBool = int serving as boolean indicating interface connectivity
+# status
+# Writes: etherCSV, wifiCSV
 def check_conn_helper(etherBool,connBool):
    toWrite=strftime("%S,%M,%H,%d,%m,%Y")
    scriptCall="/usr/local/projects/wifi_connectivity/shell-helpers/interface_csv_status"
@@ -69,35 +79,73 @@ def check_conn_helper(etherBool,connBool):
          toWrite="OFFLINE"+toWrite
          wifiCSV.write(toWrite)
 
-# check ethernet helper, accepts hostname addresses
+# Description: check interface helper, attempts to connect to site using
+# input interface
+# Args: hardware = name of interface being used, address = web address
+# that connection is attempted on
+# Writes: logFile
 def check_site_helper(hardware,address):
+   # creates socket used
    sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)   
-   # sets hardware device to be used in verifying connection
+   # sets sets socket to use hardware arg
    sock.setsockopt(socket.SOL_SOCKET, 25, hardware)
-   try:
-      # attempts to connect to input address with 
+   # attempts to connect to input web address
+   try: 
       sock.connect((address, 80))
       return 0
+   # if connection failed, writes to log file and returns 1
    except socket.error as err:
       toWrite= strftime("%H:%M:%S %m-%d-%Y",gmtime())+": " + "Error with " +hardware + " in attempting to access " + address + "\n"
       logFile.write(toWrite)
       return 1 
+#######
+#MAIN:#
+#######
 
-#MAIN:
-######
+# CHANGE TO READ INTERFACE NAMES FROM CONFIGFILE/HARDWARE
+# defining names of hardware interfaces and code calls 
 ether='eth0'
-wifi='wlan0'
+wifiInter='wlan0'
+wifiName='HTHomeId'
+ifdown="/sbin/ifdown "
+ifup="/sbin/ifup "
+output=" > /dev/null"
+
+# IDENTIFY WAY TO CONFIGURE MACHINCE TO NOT REQUIRE TAKING DOWN OF INTERFACES 
 # system calls to close internet interfaces are necessary, or else stalls when attempting
 # to do connectivity checks on second interface checked
-os.system("/sbin/ifdown HTHomeId > /dev/null")
+
+# bring wifi down
+osCall=ifdown+wifiName+output
+os.system(osCall)
+
+# checks connectivity of ether
 boolEther= check_connectivity_status(ether,0)
-os.system("/sbin/ifup HTHomeId > /dev/null")
-os.system("/sbin/ifdown eth0 >/dev/null")
+
+# brings wifi up
+osCall=ifup+wifiName+output
+os.system(osCall)
+
+# bring ether down
+osCall=ifdown+ether+output
+os.system(osCall)
+
+# checks wifi connectivity
 boolWifi= check_connectivity_status(wifi,1)
-os.system("/sbin/ifup eth0 > /dev/null")
+
+# brings ether up
+osCall=ifup+ether+output
+os.system(osCall)
+
+# Writing results of tests to log file
 if boolEther==0 and boolWifi==0:
    toWrite = strftime("%H:%M:%S %m-%d-%Y", gmtime())+": CONNECTIONS UP\n"
    logFile.write(toWrite)
 else:
    toWrite = strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+" NETWORK FAILURES DETECTED\n"
    logFile.write(toWrite)
+
+# calculates time period of downtime of wifi, if over certain length, calls tweet script
+if boolWifi==0:
+   print CALL TWEET SCRIPT
+   
