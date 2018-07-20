@@ -17,9 +17,14 @@ nted in record-keeping/log_file.txt, along with time
 stamps of when operation occured. Errors are written
 to logfile as well.
 
+
 PLANS(*=critical functionality):
+-Find way to get around having to take down interface
+ to test connectivity in the other*
 -Tracking downtime*
 -Add tweet functionality*
 -Implement config file*
 -Add functionality to update webpage with log files*
+-Reading in interface names from either configFile or
+ hardware
 -Attempting to remove bash script calls
