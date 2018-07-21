@@ -1,12 +1,33 @@
 README FOR WIFI CONNECTIVITY BOT:
 bchesnut19, 07/15/2018
-centOS 7
 
+Written on Raspberry Pi 3B+ with centOS 7
+Should work on any Linux system with Wifi+Ethernet.
+
+DESCRIPTION:
+This is a networking monitoring script which is desi-
+gned to be run at a frequent interval within crontab.
+The script records network log data, and is intended
+to be used to harrass your IT department on Twitter.
+
+SETUP FOR SCRIPT RUN:
+Within Linux, the default settings do not support
+multiple internet connections simultaneously. So in
+order for the script to run, kernel variables need to
+be changed, which can be done through the use of the
+"initial-setup/kernel_network_config" shell script.
+This script only needs to be run once, and then it
+will trigger a system reboot, applying var changes.
+	 Setting up of Twitter API key and Twitter
+target, along with path variables and threshold for
+action is set within config_file.
+
+SCRIPT BREAKDOWN:
 Script begins with checking of the two interfaces on
-Raspberry Pi B+, and attempts to connect to different
-websites in order to verify connectivity. If any 
-websites can be contacted through the interface, the
-interface is determined to be online.
+specified in config_file, and attempts to connect to
+different websites in order to verify connectivity. 
+If any websites can be contacted through the interfa
+-ce, the interface is determined to be online.
 	Status information is currently recorded in
 csv files located in record-keeping/ dir. The python
 script uses a bash helper function for simple data
@@ -19,12 +40,11 @@ to logfile as well.
 
 
 PLANS(*=critical functionality):
--Find way to get around having to take down interface
- to test connectivity in the other*
 -Tracking downtime*
 -Add tweet functionality*
 -Implement config file*
 -Add functionality to update webpage with log files*
 -Reading in interface names from either configFile or
  hardware
--Attempting to remove bash script calls
+-Attempting to remove bash script calls (probably more
+ trouble than its worth)
