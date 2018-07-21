@@ -123,4 +123,6 @@ else:
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
 if boolWifi==0:
-   print "CALL TWEET SCRIPT"
+   # get last line of wifi csv file
+   # if over a certain value
+   logFile.write("CALL TWEET SCRIPT\n") 
