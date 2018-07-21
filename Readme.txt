@@ -37,11 +37,13 @@ of interface has changed since last runtime.
 nted in record-keeping/log_file.txt, along with time
 stamps of when operation occured. Errors are written
 to logfile as well.
+	Calls tweet_script.py in order to send tweet.
+This is file where API Keys are stored.
 
 
 PLANS(*=critical functionality):
--Tracking downtime*
--Add tweet functionality*
+-Write tim comparison for current time and recorded csv downtime*
+-Add string arg to tweet_script.py*
 -Implement config file*
 -Add functionality to update webpage with log files*
 -Reading in interface names from either configFile or
