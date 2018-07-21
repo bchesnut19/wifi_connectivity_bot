@@ -1,0 +1,14 @@
+#!/bin/bash
+# RUN AS ROOT DURING SETUP
+
+# PATH TO CONFIG FILE IN "/etc/sysctl.d/"
+config="/etc/sysctl.d/net.conf"
+
+# sets kernel variables to allow for connections
+# through two different interfaces.
+echo "net.ipv4.conf.all.arp_filter=1" >> $config
+echo "net.ipv4.conf.all.rp_filter=2" >> $config
+echo "net.ipv4.conf.all.arp_announce=1" >> $config
+echo "net.ipv4.conf.all.arp_ignore=1" >> $config
+
+systemctl reboot

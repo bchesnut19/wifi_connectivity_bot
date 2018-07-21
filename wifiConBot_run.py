@@ -90,6 +90,8 @@ def check_site_helper(hardware,address):
    # attempts to connect to input web address
    try: 
       sock.connect((address, 80))
+      sock.shutdown(socket.SHUT_RDWR)
+      sock.close()
       return 0
    # if connection failed, writes to log file and returns 1
    except socket.error as err:
@@ -104,46 +106,21 @@ def check_site_helper(hardware,address):
 # defining names of hardware interfaces and code calls 
 ether='eth0'
 wifiInter='wlan0'
-wifiName='HTHomeId'
-ifdown="/sbin/ifdown "
-ifup="/sbin/ifup "
-output=" > /dev/null"
-
-# IDENTIFY WAY TO CONFIGURE MACHINCE TO NOT REQUIRE TAKING DOWN OF INTERFACES 
-# system calls to close internet interfaces are necessary, or else stalls when attempting
-# to do connectivity checks on second interface checked
-
-# bring wifi down
-osCall=ifdown+wifiName+output
-os.system(osCall)
 
 # checks connectivity of ether
 boolEther= check_connectivity_status(ether,0)
 
-# brings wifi up
-osCall=ifup+wifiName+output
-os.system(osCall)
-
-# bring ether down
-osCall=ifdown+ether+output
-os.system(osCall)
-
 # checks wifi connectivity
 boolWifi= check_connectivity_status(wifiInter,1)
-
-# brings ether up
-osCall=ifup+ether+output
-os.system(osCall)
 
 # Writing results of tests to log file
 if boolEther==0 and boolWifi==0:
    toWrite = strftime("%H:%M:%S %m-%d-%Y", gmtime())+": CONNECTIONS UP\n"
    logFile.write(toWrite)
 else:
-   toWrite = strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+" NETWORK FAILURES DETECTED\n"
+   toWrite = strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+"NETWORK FAILURES DETECTED\n"
    logFile.write(toWrite)
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
 if boolWifi==0:
    print "CALL TWEET SCRIPT"
-   
