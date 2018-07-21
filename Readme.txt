@@ -42,7 +42,8 @@ This is file where API Keys are stored.
 
 
 PLANS(*=critical functionality):
--Write tim comparison for current time and recorded csv downtime*
+-Write time comparison for current time and recorded 
+ csv downtime*
 -Add string arg to tweet_script.py*
 -Implement config file*
 -Add functionality to update webpage with log files*
