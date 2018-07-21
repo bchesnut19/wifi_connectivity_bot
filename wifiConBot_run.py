@@ -56,28 +56,26 @@ def check_connectivity_status(hardware,etherBool):
 # Writes: etherCSV, wifiCSV
 def check_conn_helper(etherBool,connBool):
    toWrite=strftime("%S,%M,%H,%d,%m,%Y")
-   scriptCall="/usr/local/projects/wifi_connectivity/shell-helpers/interface_csv_status"
+   scriptCall="/usr/local/projects/wifi_connectivity_bot/shell-helpers/interface_csv_status"
    if etherBool==0:
-      scriptCall = scriptCall+" "+connBool+ " " +etherBool
-      matchesStatus = subprocess.check_output([scriptCall], shell=True)
+      matchesStatus = subprocess.check_output([scriptCall,str(connBool),str(etherBool)], shell=True)
    else:
-      scriptCall = scriptCall+" "+connBool+ " "+etherBool
-      matchesStatus = subprocess.check_output([scriptCall],shell=True)
+      matchesStatus = subprocess.check_output([scriptCall,str(connBool),str(etherBool)], shell=True)
    if matchesStatus=="1":
       if etherBool==0:
          if connBool==0:
-            toWrite="ONLINE,"+toWrite
+            toWrite="ONLINE,"+toWrite+"\n"
             etherCSV.write(toWrite)
          else:
-            toWrite="OFFLINE,"+toWrite
+            toWrite="OFFLINE,"+toWrite+"\n"
             etherCSV.write(toWrite)
-   else:
-      if connBool==0:
-         toWrite="ONLINE,"+toWrite
-         wifiCSV.write(toWrite)
       else:
-         toWrite="OFFLINE"+toWrite
-         wifiCSV.write(toWrite)
+         if connBool==0:
+            toWrite="ONLINE,"+toWrite+"\n"
+            wifiCSV.write(toWrite)
+         else:
+            toWrite="OFFLINE"+toWrite+"\n"
+            wifiCSV.write(toWrite)
 
 # Description: check interface helper, attempts to connect to site using
 # input interface
@@ -131,7 +129,7 @@ osCall=ifdown+ether+output
 os.system(osCall)
 
 # checks wifi connectivity
-boolWifi= check_connectivity_status(wifi,1)
+boolWifi= check_connectivity_status(wifiInter,1)
 
 # brings ether up
 osCall=ifup+ether+output
@@ -147,5 +145,5 @@ else:
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
 if boolWifi==0:
-   print CALL TWEET SCRIPT
+   print "CALL TWEET SCRIPT"
    
