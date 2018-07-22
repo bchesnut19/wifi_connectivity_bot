@@ -58,7 +58,7 @@ def check_conn_helper(etherBool,connBool):
    toWrite=strftime("%S,%M,%H,%d,%m,%Y")
    scriptCall="/usr/local/projects/wifi_connectivity_bot/shell-helpers/interface_csv_status"
    if etherBool==0:
-      matchesStatus = subprocess.check_output([scriptCall,str(connBool),str(etherBool)], shell=True)
+      matchesStatus = subprocess.check_output([scriptCall," ",str(connBool)," ",str(etherBool)], shell=True)
    else:
       matchesStatus = subprocess.check_output([scriptCall,str(connBool),str(etherBool)], shell=True)
    if matchesStatus=="1":

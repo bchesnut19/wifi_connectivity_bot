@@ -44,6 +44,9 @@ PLANS(*=critical functionality):
 -Add tweet functionality*
 -Implement config file*
 -Add functionality to update webpage with log files*
+-Restarting wifi interface if previous script run had
+ it recorded as down
+-Debug csv update script
 -Reading in interface names from either configFile or
  hardware
 -Attempting to remove bash script calls (probably more
