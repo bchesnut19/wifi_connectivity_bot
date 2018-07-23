@@ -1,0 +1,25 @@
+#!/bin/bash
+###########################################################################
+# Description:                                                            #
+# Gets date from last line of wifi csv file                               #
+###########################################################################
+
+csvFile="record-keeping/up_down_wifi.csv"
+
+# pipes csv file into two tail commands which first remove the first two lines,
+# then grabs the last line
+line="$(cat $csvFile | tail --lines=+2 | tail -1)"
+result="$(echo -n $line | awk -F "," '{print $1}')"
+# if value grabbed does not equal either potential option, is either blank or is
+# invalid record, so the script returns 1
+if [ "$result" != "OFFLINE" ] 
+then
+   echo -n "9,9,9,9,9,9999"
+else
+   second="$(echo -n $line | awk -F "," '{print $2}')"
+   minute="$(echo -n $line | awk -F "," '{print $3}')"
+   hour="$(echo -n $line | awk -F "," '{print $4}')"
+   day="$(echo -n $line | awk -F "," '{print $5}')"
+   month="$(echo -n $line | awk -F "," '{print $6}')"
+   year="$(echo -n $line | awk -F "," '{print $7}')"
+fi   
