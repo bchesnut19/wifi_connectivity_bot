@@ -25,6 +25,23 @@ wifiCSV = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down
 #FUNCTIONS:
 ###########
 
+# Description: Checks if wifi is down upon start of script, if so restarts
+# wifi interface.
+def wifi_restart_check():
+   scriptCall = check_conn+" 1"+" 1"
+   wifiDown = subprocess.check_output([scriptCall], shell=True)
+   if wifiDown==1:
+      downCall="/sbin/ifdown "+wifiName
+      os.system(downCall)
+      upCall="/sbin/ifup "+wifiName
+      os.system(upCall)
+      toWrite=strftime("%H:%M%S %m-%d-%Y",gmtime())
+      toWrite=toWrite+": "+"Wifi interface restarted\n"
+      logFile.write(toWrite)
+      return 0
+   else:
+      return 1
+
 # Description: finds network status on interface
 # Args: hardware = name of hardware interface, etherbool = int serving as
 # boolean indicating if interface is ethernet or wifi
@@ -56,11 +73,11 @@ def check_connectivity_status(hardware,etherBool):
 # Writes: etherCSV, wifiCSV
 def check_conn_helper(etherBool,connBool):
    toWrite=strftime("%S,%M,%H,%d,%m,%Y")
-   scriptCall="/usr/local/projects/wifi_connectivity_bot/shell-helpers/interface_csv_status"
+   scriptCall=check_conn+" "+str(connBool)+" "+str(etherBool)
    if etherBool==0:
-      matchesStatus = subprocess.check_output([scriptCall," ",str(connBool)," ",str(etherBool)], shell=True)
+      matchesStatus = subprocess.check_output([scriptCall], shell=True)
    else:
-      matchesStatus = subprocess.check_output([scriptCall,str(connBool),str(etherBool)], shell=True)
+      matchesStatus = subprocess.check_output([scriptCall], shell=True)
    if matchesStatus=="1":
       if etherBool==0:
          if connBool==0:
@@ -104,9 +121,14 @@ def check_site_helper(hardware,address):
 
 # CHANGE TO READ INTERFACE NAMES FROM CONFIGFILE/HARDWARE
 # defining names of hardware interfaces and code calls 
-ether='eth0'
-wifiInter='wlan0'
+ether = 'eth0'
+wifiInter = 'wlan0'
+wifiName = 'HTHomeId'
+check_conn = "/usr/local/projects/wifi_connectivity_bot/shell-helpers/interface_csv_status"
 
+# if wifi was down as of last run, restart wifi interface
+wifi_restart_check()
+  
 # checks connectivity of ether
 boolEther= check_connectivity_status(ether,0)
 

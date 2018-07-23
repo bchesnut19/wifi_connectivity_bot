@@ -39,7 +39,8 @@ stamps of when operation occured. Errors are written
 to logfile as well.
 	Calls tweet_script.py in order to send tweet.
 This is file where API Keys are stored.
-
+	If wifi down upon last script call, restarts
+wifi interface.
 
 PLANS(*=critical functionality):
 -Write time comparison for current time and recorded 
