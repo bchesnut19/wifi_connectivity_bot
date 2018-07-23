@@ -54,8 +54,6 @@ wifi interface.
 PLANS(*=critical functionality):
 -Write time comparison for current time and recorded 
  csv downtime*
--Add string arg to tweet_script.py*
 -Add functionality to update webpage with log files*
--Try to get script to record logfile times in local time
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
