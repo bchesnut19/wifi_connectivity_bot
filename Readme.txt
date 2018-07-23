@@ -10,6 +10,9 @@ gned to be run at a frequent interval within crontab.
 The script records network log data, and is intended
 to be used to harrass your IT department on Twitter.
 
+DEPENDENCIES:
+twitter-api for Python.
+
 SETUP FOR SCRIPT RUN:
 Within Linux, the default settings do not support
 multiple internet connections simultaneously. So in
