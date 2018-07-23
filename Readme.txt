@@ -18,9 +18,9 @@ be changed, which can be done through the use of the
 "initial-setup/kernel_network_config" shell script.
 This script only needs to be run once, and then it
 will trigger a system reboot, applying var changes.
-	 Setting up of Twitter API key and Twitter
-target, along with path variables and threshold for
-action is set within config_file.
+	 Setting up of Twitter API keys and Twitter
+target, along with wifi and ethernet name values is
+set within config/config_file.txt
 
 EXAMPLE CRONTAB RUN:
 Enter crontab using "crontab -e" as root. Enter the
@@ -52,10 +52,7 @@ PLANS(*=critical functionality):
 -Write time comparison for current time and recorded 
  csv downtime*
 -Add string arg to tweet_script.py*
--Implement config file*
 -Add functionality to update webpage with log files*
--Debug csv update script
--Reading in interface names from either configFile or
- hardware
+-Try to get script to record logfile times in local time
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
