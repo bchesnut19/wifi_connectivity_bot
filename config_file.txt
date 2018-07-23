@@ -1,5 +1,19 @@
 Config File:
+# PATH INFORMATION
+
+Base Path:/insert/path/to/dir/here/
+
+# CONNECTION INFORMATION
+
+Wifi Interface:INSERT HERE
+Wifi Network Name:INSERT HERE
+Ethernet Interface:INSERT HERE
+
+# TWITTER INFORMATION
+
 # Account to be tweeted at when ergegious connectivity exists
-Twitter Destination:<INSERT HERE>
-# API Key for Twitter
-Key:<INSERT HERE>
+Twitter Destination:INSERT HERE
+Consumer Key:INSERT HERE
+Consumer Secret:INSERT HERE
+Access Token Key:INSERT HERE
+Access Token Secret:INSERT HERE
