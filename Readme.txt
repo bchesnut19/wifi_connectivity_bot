@@ -22,6 +22,12 @@ will trigger a system reboot, applying var changes.
 target, along with path variables and threshold for
 action is set within config_file.
 
+EXAMPLE CRONTAB RUN:
+Enter crontab using "crontab -e" as root. Enter the
+following line:
+*/1 * * * * cd /SCRIPT/DIR/ && ./wifiConnBot_run.py
+Script will run every minute in correct directory.
+
 SCRIPT BREAKDOWN:
 Script begins with checking of the two interfaces on
 specified in config_file, and attempts to connect to
@@ -48,8 +54,6 @@ PLANS(*=critical functionality):
 -Add string arg to tweet_script.py*
 -Implement config file*
 -Add functionality to update webpage with log files*
--Restarting wifi interface if previous script run had
- it recorded as down
 -Debug csv update script
 -Reading in interface names from either configFile or
  hardware

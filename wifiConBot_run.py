@@ -17,10 +17,9 @@ from time import gmtime, strftime
 
 #GLOBAL VARS:
 #############
-configFile = open("/usr/local/projects/wifi_connectivity_bot/config_file.txt","r")
-logFile = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/log_file.txt","a+")
-etherCSV = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_eth.csv","a+")
-wifiCSV = open("/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_wifi.csv","a+")
+logFile = open("record-keeping/log_file.txt","a+")
+etherCSV = open("record-keeping/up_down_eth.csv","a+")
+wifiCSV = open("record-keeping/up_down_wifi.csv","a+")
 
 #FUNCTIONS:
 ###########
@@ -119,12 +118,16 @@ def check_site_helper(hardware,address):
 #MAIN:#
 #######
 
-# CHANGE TO READ INTERFACE NAMES FROM CONFIGFILE/HARDWARE
-# defining names of hardware interfaces and code calls 
-ether = 'eth0'
-wifiInter = 'wlan0'
-wifiName = 'HTHomeId'
-check_conn = "/usr/local/projects/wifi_connectivity_bot/shell-helpers/interface_csv_status"
+# defining names of wifi and eth from config file
+config = "config/config_reader"
+etherCall = config+" 3"
+ether = subprocess.check_output([etherCall], shell=True) 
+wifiIntCall = config+" 1"
+wifiInter = subprocess.check_output([wifiIntCall], shell=True)
+wifiNameCall = config+" 2"
+wifiName = subprocess.check_output([wifiNameCall], shell=True)
+
+check_conn = "shell-helpers/interface_csv_status"
 
 # if wifi was down as of last run, restart wifi interface
 wifi_restart_check()
