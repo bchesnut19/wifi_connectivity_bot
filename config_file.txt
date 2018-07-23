@@ -1,8 +1,4 @@
 Config File:
-# PATH INFORMATION
-
-Base Path:/insert/path/to/dir/here/
-
 # CONNECTION INFORMATION
 
 Wifi Interface:INSERT HERE
