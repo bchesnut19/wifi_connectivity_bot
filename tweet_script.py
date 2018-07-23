@@ -3,6 +3,8 @@ import twitter
 import sys
 import subprocess
 
+tweet=str(sys.argv[1])
+
 # SET UP ARGUMENT INPUT FOR TWEET
 configReader = "config/config_reader"
 conKeyCall = configReader+" 5"
@@ -18,4 +20,4 @@ api = twitter.Api(consumer_key=conKey, #subprocess.check_output([conKeyCall], sh
                   consumer_secret=conSecr, #subprocess.check_output([conSecrCall, shell=True]),
                   access_token_key=tokeKey, #subprocess.check_output([tokeKeyCall], shell=True),
                   access_token_secret=tokeSecr) #subprocess.check_output([tokeSecrCall], shell=True))
-api.PostUpdate("@roastedchesnut test123")
+api.PostUpdate(tweet)

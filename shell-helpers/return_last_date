@@ -22,4 +22,7 @@ else
    day="$(echo -n $line | awk -F "," '{print $5}')"
    month="$(echo -n $line | awk -F "," '{print $6}')"
    year="$(echo -n $line | awk -F "," '{print $7}')"
+   
+   # compare output date with time comparitor
+   # date -d '$year$month$day$hour$minute$second'
 fi   

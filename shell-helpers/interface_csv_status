@@ -15,9 +15,9 @@
 # checks arg to determine csv file to write to
 if [ "$2"=="0" ]
 then
-   csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_eth.csv"
+   csvFile="record-keeping/up_down_eth.csv"
 else
-   csvFile="/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_wifi.csv"
+   csvFile="record-keeping/up_down_wifi.csv"
 fi
 
 # pipes csv file into two tail commands which first remove the first two lines,

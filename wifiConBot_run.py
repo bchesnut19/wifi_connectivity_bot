@@ -13,7 +13,7 @@ import fcntl
 import struct
 import os
 import subprocess
-from time import gmtime, strftime
+from time import localtime, strftime
 
 #GLOBAL VARS:
 #############
@@ -34,7 +34,7 @@ def wifi_restart_check():
       os.system(downCall)
       upCall="/sbin/ifup "+wifiName
       os.system(upCall)
-      toWrite=strftime("%H:%M%S %m-%d-%Y",gmtime())
+      toWrite=strftime("%H:%M%S %m-%d-%Y",localtime())
       toWrite=toWrite+": "+"Wifi interface restarted\n"
       logFile.write(toWrite)
       return 0
@@ -53,13 +53,13 @@ def check_connectivity_status(hardware,etherBool):
    bingBool=check_site_helper(hardware,'bing.com')
    faceBool=check_site_helper(hardware,'facebook.com')
    if googleBool==0 or bingBool==0 or faceBool==0:
-      toWrite=strftime("%H:%M:%S %m-%d-%Y",gmtime())+": "+hardware+" is active\n"
+      toWrite=strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+hardware+" is active\n"
       logFile.write(toWrite)
       # calls helper with bool for device and device status
       check_conn_helper(etherBool,0)
       return 0
    else:
-      toWrite= strftime("%H:%M:%S %m-%d-%Y",gmtime())+": "+hardware+" is down\n"
+      toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+hardware+" is down\n"
       logFile.write(toWrite)
       # calls helper with bool for device and device status
       check_conn_helper(etherBool,1)
@@ -71,7 +71,7 @@ def check_connectivity_status(hardware,etherBool):
 # status
 # Writes: etherCSV, wifiCSV
 def check_conn_helper(etherBool,connBool):
-   toWrite=strftime("%S,%M,%H,%d,%m,%Y")
+   toWrite=strftime("%S,%M,%H,%d,%m,%Y",localtime())
    scriptCall=check_conn+" "+str(connBool)+" "+str(etherBool)
    if etherBool==0:
       matchesStatus = subprocess.check_output([scriptCall], shell=True)
@@ -111,7 +111,7 @@ def check_site_helper(hardware,address):
       return 0
    # if connection failed, writes to log file and returns 1
    except socket.error as err:
-      toWrite= strftime("%H:%M:%S %m-%d-%Y",gmtime())+": " + "Error with " +hardware + " in attempting to access " + address + "\n"
+      toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": " + "Error with " +hardware + " in attempting to access " + address + "\n"
       logFile.write(toWrite)
       return 1 
 #######
@@ -140,10 +140,10 @@ boolWifi= check_connectivity_status(wifiInter,1)
 
 # Writing results of tests to log file
 if boolEther==0 and boolWifi==0:
-   toWrite = strftime("%H:%M:%S %m-%d-%Y", gmtime())+": CONNECTIONS UP\n"
+   toWrite = strftime("%H:%M:%S %m-%d-%Y", localtime())+": CONNECTIONS UP\n"
    logFile.write(toWrite)
 else:
-   toWrite = strftime("%H:%M:%S %m-%d-%Y", gmtime())+": "+"NETWORK FAILURES DETECTED\n"
+   toWrite = strftime("%H:%M:%S %m-%d-%Y", localtime())+": "+"NETWORK FAILURES DETECTED\n"
    logFile.write(toWrite)
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
