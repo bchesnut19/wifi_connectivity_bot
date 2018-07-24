@@ -29,7 +29,7 @@ wifiCSV = open("record-keeping/up_down_wifi.csv","a+")
 def wifi_restart_check():
    scriptCall = check_conn+" 1"+" 1"
    wifiDown = subprocess.check_output([scriptCall], shell=True)
-   if wifiDown==1:
+   if wifiDown==0:
       downCall="/sbin/ifdown "+wifiName
       os.system(downCall)
       upCall="/sbin/ifup "+wifiName
