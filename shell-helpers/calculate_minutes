@@ -24,7 +24,7 @@ else
    year="$(echo -n $line | awk -F "," '{print $7}')"
    
    # compare output date with time comparitor
-   lastDate="$year-$month-$day $hour:$minute"#:%s"
+   lastDate="$year-$month-$day $hour:$minute"#:%second"
    t1=`date --date="$lastDate" +%s`
    currentTime=`date +%Y-%m-%d\ %H:%M`#:%S`
    t2=`date --date="$currentTime" +%s`
