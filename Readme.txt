@@ -129,5 +129,6 @@ account specified in logfile.
 -Add functionality to update webpage with log files*
 -Create wiki and transfer some readme info to wiki
 -Finish program logic description
+-Write handler for days and weeks
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
