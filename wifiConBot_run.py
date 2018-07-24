@@ -49,9 +49,9 @@ def wifi_restart_check():
 # Returns: int, 0 indicates connectivity on interface successful,
 # 1 indicates connectivity on interface unsuccessful
 def check_connectivity_status(hardware,etherBool):
-   googleBool=check_site_helper(hardware, '111.78.2.19')
-   bingBool=check_site_helper(hardware,'111.78.2.19')
-   faceBool=check_site_helper(hardware,'111.78.2.19')
+   googleBool=check_site_helper(hardware, 'google.com')
+   bingBool=check_site_helper(hardware,'bing.com')
+   faceBool=check_site_helper(hardware,'facebook.com')
    if googleBool==0 or bingBool==0 or faceBool==0:
       toWrite=strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+hardware+" is active\n"
       logFile.write(toWrite)
@@ -114,7 +114,34 @@ def check_site_helper(hardware,address):
    except socket.error as err:
       toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": " + "Error with " +hardware + " in attempting to access " + address + "\n"
       logFile.write(toWrite)
-      return 1 
+      return 1
+def tweet_handler():
+   # get last line of wifi csv file
+   # if over a certain value
+   dateCall = "shell-helpers/return_last_date"
+   downTime = subprocess.check_output([dateCall], shell=True)
+   timeDownCall = "shell-helpers/calculate_minutes"
+   minutesDown = subprocess.check_output([timeDownCall], shell=True)
+   minutesDown = int(minutesDown)
+   toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
+   if minutesDown==30:
+      tweet="Wifi has been down for "+str(minutesDown)+" minutes, since: "+downTime
+      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+      os.system(tweetCall)
+      logFile.write(toWrite)
+   elif minutesDown==60:
+      hours=minutesDown/60
+      tweet="Wifi has been down for "+str(hours)+" hour, since: "+downTime
+      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+      os.system(tweetCall)
+      logFile.write(toWrite)
+   elif minutesDown%60==0:
+      hours=minutesDown/60
+      tweet=twitterDestination + ", Wifi has been down for "+str(hours)+" hours, since: "+downTime
+      tweetCall = "./tweet_script.py " +"\""+tweet+"\""
+      os.system(tweetCall)
+      logFile.write(toWrite)
+ 
 #######
 #MAIN:#
 #######
@@ -129,7 +156,6 @@ wifiNameCall = config+" 2"
 wifiName = subprocess.check_output([wifiNameCall], shell=True)
 twitterCall = config+" 4"
 twitterDestination = subprocess.check_output([twitterCall], shell=True)
-
 
 check_conn = "shell-helpers/interface_csv_status"
 
@@ -154,21 +180,4 @@ else:
 if boolWifi==1:
    # get last line of wifi csv file
    # if over a certain value
-   dateCall = "shell-helpers/return_last_date"
-   downTime = subprocess.check_output([dateCall], shell=True)
-   timeDownCall = "shell-helpers/calculate_minutes"
-   minutesDown = subprocess.check_output([timeDownCall], shell=True)
-   minutesDown = int(minutesDown)
-   if minutesDown==30:
-      tweet="Wifi has been down for "+str(minutesDown)+" minutes, since: "+downTime
-      tweetCall = "./tweet_script.py "+tweet
-      os.system(tweetCall)
-   elif minutesDown==60:
-      hours=minutesDown/60
-      tweet="Wifi has been down for "+str(hours)+" hour, since: "+downTime
-      tweetCall = "./tweet_script.py "+tweet
-      os.system(tweetCall)
-   elif minutesDown%60==0:
-      hours=minutesDown/60
-      tweet=twitterDestination + ", Wifi has been down for "+str(hours)+" hours, since: "+downTime
-      tweetCall = "./tweet_script.py " +tweet
+   tweet_handler()

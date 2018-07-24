@@ -12,7 +12,7 @@ line="$(cat $csvFile | tail --lines=+2 | tail -1)"
 result="$(echo -n $line | awk -F "," '{print $1}')"
 # if value grabbed does not equal either potential option, is either blank or is
 # invalid record, so the script returns 1
-if [ "$result" != "ONLINE" ] # "OFFLINE" ] 
+if [ "$result" != "OFFLINE" ]
 then
    echo -n "-1"
 else
