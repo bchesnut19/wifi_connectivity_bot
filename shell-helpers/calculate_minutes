@@ -24,9 +24,9 @@ else
    year="$(echo -n $line | awk -F "," '{print $7}')"
    
    # compare output date with time comparitor
-   lastDate="$year-$month-$day $hour:$minute:$second"
+   lastDate="$year-$month-$day $hour:$minute"#:%s"
    t1=`date --date="$lastDate" +%s`
-   currentTime=`date +%Y-%m-%d\ %H:%M:%S`
+   currentTime=`date +%Y-%m-%d\ %H:%M`#:%S`
    t2=`date --date="$currentTime" +%s`
    let "tDiff=$t2-$t1"
    let "mDiff=$tDiff/60"
