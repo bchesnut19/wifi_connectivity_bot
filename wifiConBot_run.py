@@ -90,7 +90,7 @@ def check_conn_helper(etherBool,connBool):
             toWrite="ONLINE,"+toWrite+"\n"
             wifiCSV.write(toWrite)
          else:
-            toWrite="OFFLINE"+toWrite+"\n"
+            toWrite="OFFLINE,"+toWrite+"\n"
             wifiCSV.write(toWrite)
 
 # Description: check interface helper, attempts to connect to site using
@@ -103,6 +103,7 @@ def check_site_helper(hardware,address):
    sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)   
    # sets sets socket to use hardware arg
    sock.setsockopt(socket.SOL_SOCKET, 25, hardware)
+   sock.settimeout(3)
    # attempts to connect to input web address
    try: 
       sock.connect((address, 80))
@@ -147,7 +148,9 @@ else:
    logFile.write(toWrite)
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
-if boolWifi==0:
+if boolWifi==1:
    # get last line of wifi csv file
    # if over a certain value
-   logFile.write("CALL TWEET SCRIPT\n") 
+   tweet="Wifi down"
+   tweetCall="./tweet_script.py "+tweet
+   os.system(tweetCall)
