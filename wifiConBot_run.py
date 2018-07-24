@@ -20,6 +20,18 @@ from time import localtime, strftime
 logFile = open("record-keeping/log_file.txt","a+")
 etherCSV = open("record-keeping/up_down_eth.csv","a+")
 wifiCSV = open("record-keeping/up_down_wifi.csv","a+")
+# defines script paths
+dateCall = "shell-helpers/return_last_date"
+config = "config/config_reader"
+check_conn = "shell-helpers/interface_csv_status"
+timeDownCall = "shell-helpers/calculate_minutes"
+# defining names of wifi and eth from config file
+etherCall = config+" 3"
+ether = subprocess.check_output([etherCall], shell=True) 
+wifiIntCall = config+" 1"
+wifiInter = subprocess.check_output([wifiIntCall], shell=True)
+wifiNameCall = config+" 2"
+wifiName = subprocess.check_output([wifiNameCall], shell=True)
 
 #FUNCTIONS:
 ###########
@@ -118,9 +130,9 @@ def check_site_helper(hardware,address):
 def tweet_handler():
    # get last line of wifi csv file
    # if over a certain value
-   dateCall = "shell-helpers/return_last_date"
+   twitterCall = config+" 4"
+   twitterDestination = subprocess.check_output([twitterCall], shell=True)
    downTime = subprocess.check_output([dateCall], shell=True)
-   timeDownCall = "shell-helpers/calculate_minutes"
    minutesDown = subprocess.check_output([timeDownCall], shell=True)
    minutesDown = int(minutesDown)
    toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
@@ -145,19 +157,6 @@ def tweet_handler():
 #######
 #MAIN:#
 #######
-
-# defining names of wifi and eth from config file
-config = "config/config_reader"
-etherCall = config+" 3"
-ether = subprocess.check_output([etherCall], shell=True) 
-wifiIntCall = config+" 1"
-wifiInter = subprocess.check_output([wifiIntCall], shell=True)
-wifiNameCall = config+" 2"
-wifiName = subprocess.check_output([wifiNameCall], shell=True)
-twitterCall = config+" 4"
-twitterDestination = subprocess.check_output([twitterCall], shell=True)
-
-check_conn = "shell-helpers/interface_csv_status"
 
 # if wifi was down as of last run, restart wifi interface
 wifi_restart_check()
