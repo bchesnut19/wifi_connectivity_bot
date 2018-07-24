@@ -50,10 +50,12 @@ to logfile as well.
 This is file where API Keys are stored.
 	If wifi down upon last script call, restarts
 wifi interface.
+	Compares downtime from up_down_wifi.csv with
+current time, tweets at 30 minutes of downtime, and
+hourly after. Upon two hour mark, begins tweeting at
+account specified in logfile.
 
 PLANS(*=critical functionality):
--Write time comparison for current time and recorded 
- csv downtime*
 -Add functionality to update webpage with log files*
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
