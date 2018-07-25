@@ -147,13 +147,22 @@ def tweet_handler():
       tweetCall = "./tweet_script.py "+"\""+tweet+"\""
       os.system(tweetCall)
       logFile.write(toWrite)
+   elif minutesDown==10080:
+      tweet = "Wifi has been down for a week, since "+downTime
+      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+      os.system(tweetCall)
+      logFile.write(toWrite)
+   elif minutesDown%10080==0:
+      weeks = minutesDown/10080
+      tweet = "Wifi has been down for "+str(weeks)+" weeks, since: " + downTime
+      os.system(tweetCall)
+      logFile.write(toWrite)
    elif minutesDown%60==0:
       hours=minutesDown/60
       tweet=twitterDestination + ", Wifi has been down for "+str(hours)+" hours, since: "+downTime
       tweetCall = "./tweet_script.py " +"\""+tweet+"\""
       os.system(tweetCall)
       logFile.write(toWrite)
- 
 #######
 #MAIN:#
 #######

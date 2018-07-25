@@ -44,7 +44,6 @@ Script will run every minute in correct directory.
 *PLANS(*=critical functionality):*
 **********************************
 -Add functionality to update webpage with log files*
--Finish program logic description
--Write handler for days and weeks
+-Add customizable tweet intervals
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
