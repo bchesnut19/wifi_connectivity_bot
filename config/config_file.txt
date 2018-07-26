@@ -13,3 +13,8 @@ Consumer Key:INSERT HERE
 Consumer Secret:INSERT HERE
 Access Token Key:INSERT HERE
 Access Token Secret:INSERT HERE
+
+# How often bot tweets when wifi goes down
+Tweet Interval:TIME_IN_MINUTES
+# How long before the bot tweets at account
+Target Threshold:TIME_IN_MINUTES
