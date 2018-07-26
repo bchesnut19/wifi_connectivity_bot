@@ -181,12 +181,26 @@ def tweet_handler():
       logFile.write(toWrite)
 
 def tweet_date_formatter(weekStr,dayStr,hourStr,minuteStr,downTime):
+   counter=0
+   if weekStr!="":
+      counter=counter+1
+   if dayStr!="":
+      counter=counter+1
+   if hourStr!="":
+      counter=counter+1
+   if minuteStr!="":
+      counter=counter+1
+   if counter>1:
+      andStr=" and"
+   else:
+      andStr=""
+   
    if minuteStr!="":   
-      tweetDate="Wifi has been down for"+weekStr+dayStr+hourStr+ " and" + minuteStr+" since: "+downTime
+      tweetDate="Wifi has been down for"+weekStr+dayStr+hourStr+ andStr + minuteStr+" since: "+downTime
    elif hourStr!="": 
-      tweetDate="Wifi has been down for"+weekStr+dayStr+" and" + hourStr+" since: "+downTime
+      tweetDate="Wifi has been down for"+weekStr+dayStr+andStr + hourStr+" since: "+downTime
    elif dayStr!="":
-      tweetDate="Wifi has been down for"+weekStr+" and"+ dayStr+" since: "+downTime
+      tweetDate="Wifi has been down for"+weekStr+andStr+ dayStr+" since: "+downTime
    else:
       tweetDate="Wifi has been down for"+weekStr+" since: "+downTime
    return tweetDate
