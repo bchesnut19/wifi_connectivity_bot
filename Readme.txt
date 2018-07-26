@@ -44,6 +44,8 @@ Script will run every minute in correct directory.
 *PLANS(*=critical functionality):*
 **********************************
 -Add functionality to update webpage with log files*
+-Fix tweet_date_formatter for when only one unit is
+ tweeted
 -Add new documentation for scripts
 -Test to make sure bot functions properly when wifi 
  actually goes down.
