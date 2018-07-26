@@ -32,6 +32,10 @@ wifiIntCall = config+" 1"
 wifiInter = subprocess.check_output([wifiIntCall], shell=True)
 wifiNameCall = config+" 2"
 wifiName = subprocess.check_output([wifiNameCall], shell=True)
+hourMinutes = 60
+dayMinutes = 1440
+weekMinutes = 10800
+
 
 #FUNCTIONS:
 ###########
@@ -131,38 +135,81 @@ def tweet_handler():
    # get last line of wifi csv file
    # if over a certain value
    twitterCall = config+" 4"
+   tweetInterval = int(config+" 9")
+   targetThreshold = int(config+" 10")
    twitterDestination = subprocess.check_output([twitterCall], shell=True)
    downTime = subprocess.check_output([dateCall], shell=True)
    minutesDown = subprocess.check_output([timeDownCall], shell=True)
    minutesDown = int(minutesDown)
    toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
-   if minutesDown==30:
-      tweet="Wifi has been down for "+str(minutesDown)+" minutes, since: "+downTime
-      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
-      os.system(tweetCall)
-      logFile.write(toWrite)
-   elif minutesDown==60:
-      hours=minutesDown/60
-      tweet="Wifi has been down for "+str(hours)+" hour, since: "+downTime
-      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
-      os.system(tweetCall)
-      logFile.write(toWrite)
-   elif minutesDown==10080:
-      tweet = "Wifi has been down for a week, since "+downTime
-      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
-      os.system(tweetCall)
-      logFile.write(toWrite)
-   elif minutesDown%10080==0:
-      weeks = minutesDown/10080
-      tweet = "Wifi has been down for "+str(weeks)+" weeks, since: " + downTime
-      os.system(tweetCall)
-      logFile.write(toWrite)
-   elif minutesDown%60==0:
-      hours=minutesDown/60
-      tweet=twitterDestination + ", Wifi has been down for "+str(hours)+" hours, since: "+downTime
-      tweetCall = "./tweet_script.py " +"\""+tweet+"\""
-      os.system(tweetCall)
-      logFile.write(toWrite)
+   
+   if minutesDown%tweetInterval==0:
+      weeks = units_tweet_helper(minutesDown,minutesWeek)
+      if weeks==1:
+         weekStr=" one week, "
+      elif weeks>1:
+         weekStr=" "+str(weeks)+ " weeks, "
+      else:
+         weekStr=""
+      difference=weeks*minutesWeek
+      minutesDiff=minutesDiff-difference      
+      
+      days = units_tweet_helper(minutesDiff,minutesDay)
+      if days==1:
+         dayStr=" one day, "
+      elif days>1:
+         dayStr=" "+str(days)+" days, "
+      else:
+         dayStr=""
+      difference=days*minutesDay
+      minutesDiff=minutesDiff-difference   
+
+      hours = units_tweet_helper(minutesDiff,minutesHour)
+      if hours==1:
+         hourStr=" one hour, "
+      elif hours>1:
+         hourStr=" "+str(hours)+" hours, "
+      else:
+         hourStr=""
+      difference=hours*minutesHour
+      minutesDiff=minutesDiff-difference
+      
+      if minutesDiff==1:
+         minuteStr = " one minute, "
+      elif minutesDiff>1:
+         minutesStr=" "+str(minutesDiff)+" minutes, "
+      else:
+         minutesStr=""
+
+      if minutesDiff==1:
+         tweet="Wifi has gone down at "+downTime
+         tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+         os.system(tweetCall)
+         logFile.write(toWrite)
+      elif minutesDown<targetThreshold:
+         tweet="Wifi has been down for"+weekStr+dayString+hourStr+minuteStr+"since: "+downTime
+         tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+         os.system(tweetCall)
+         logFile.write(toWrite)
+      else:
+         tweet=twitterDestination + ", Wifi has been down for "+weekStr+dayStr+hourStr+minuteStr+"since: "+downTime
+         tweetCall = "./tweet_script.py " +"\""+tweet+"\""
+         os.system(tweetCall)
+         logFile.write(toWrite)
+
+def units_tweet_helper(minutesDown,inUnit):
+   if minutesDown==inUnit:
+      return 1
+   elif minutesDown<inUnit:
+      return 0
+   else:
+      numUnit=0
+      while (numMinutes>inUnit):
+         numMinutes = numMinutes-inUnit
+         numUnit=numUnit+1
+      return numUnit
+      
+
 #######
 #MAIN:#
 #######

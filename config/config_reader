@@ -26,4 +26,10 @@ then
 elif [ "$1" == 8 ]
 then
    echo -n $(grep "Access Token Secret:" $config | awk -F ":" '{print $2}')
+elif [ "$1" == 9 ]
+then
+   echo -n $(grep "Tweet Interval:" $config | awk -F ":" '{print $2}')
+elif [ "$1" == 10 ]
+then
+   echo -n $(grep "Target Threshold:" $config | awk -F ":" '{print $2}')
 fi
