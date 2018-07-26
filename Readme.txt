@@ -45,9 +45,9 @@ Script will run every minute in correct directory.
 **********************************
 -Add functionality to update webpage with log files*
 -Fix tweet_date_formatter for when only one unit is
- tweeted
--Add new documentation for scripts
+ tweeted, WROTE, NEED TO TEST *
 -Test to make sure bot functions properly when wifi 
- actually goes down.
+ actually goes down.*
+-Add new documentation for scripts
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
