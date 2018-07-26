@@ -134,11 +134,15 @@ def check_site_helper(hardware,address):
 def tweet_handler():
    # get last line of wifi csv file
    # if over a certain value
-   twitterCall = config+" 4"
-   tweetInterval = int(config+" 9")
-   targetThreshold = int(config+" 10")
-   twitterDestination = subprocess.check_output([twitterCall], shell=True)
+   twitterTargetCall = config+" 4"
+   tweetIntervalCall = config+" 9"
+   targetThresholdCall = config+" 10"
+   twitterDestination = subprocess.check_output([twitterTargetCall], shell=True)
    downTime = subprocess.check_output([dateCall], shell=True)
+   tweetInterval = subprocess.check_output([tweetIntervalCall], shell=True)
+   tweetInterval = int(tweetInterval)
+   targetThreshold = subprocess.check_output([targetThresholdCall], shell=True)
+   targetThreshold = int(targetThreshold)
    minutesDown = subprocess.check_output([timeDownCall], shell=True)
    minutesDown = int(minutesDown)
    toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
