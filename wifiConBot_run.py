@@ -32,9 +32,9 @@ wifiIntCall = config+" 1"
 wifiInter = subprocess.check_output([wifiIntCall], shell=True)
 wifiNameCall = config+" 2"
 wifiName = subprocess.check_output([wifiNameCall], shell=True)
-hourMinutes = 60
-dayMinutes = 1440
-weekMinutes = 10800
+minutesHour = 60
+minutesDay = 1440
+minutesWeek = 10800
 
 
 #FUNCTIONS:
@@ -146,73 +146,71 @@ def tweet_handler():
    minutesDown = subprocess.check_output([timeDownCall], shell=True)
    minutesDown = int(minutesDown)
    toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
-   
-   if minutesDown%tweetInterval==0:
-      weeks = units_tweet_helper(minutesDown,minutesWeek)
-      if weeks==1:
-         weekStr=" one week, "
-      elif weeks>1:
-         weekStr=" "+str(weeks)+ " weeks, "
-      else:
-         weekStr=""
+  
+   if minutesDown==1:
+      tweet = "Wifi has gone down at "+downTime
+      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+      os.system(tweetCall)
+      logFile.write(toWrite)
+   elif minutesDown%tweetInterval==0:
+      weekStr = units_tweet_helper(minutesDown,minutesWeek,"week")
+      weeks = minutes_unit_calc(minutesDown,minutesWeek)
       difference=weeks*minutesWeek
-      minutesDiff=minutesDiff-difference      
+      minutesDiff=minutesDown-difference
       
-      days = units_tweet_helper(minutesDiff,minutesDay)
-      if days==1:
-         dayStr=" one day, "
-      elif days>1:
-         dayStr=" "+str(days)+" days, "
-      else:
-         dayStr=""
+      dayStr=units_tweet_helper(minutesDiff,minutesDay,"day")
+      days = minutes_unit_calc(minutesDiff,minutesDay)
       difference=days*minutesDay
       minutesDiff=minutesDiff-difference   
 
-      hours = units_tweet_helper(minutesDiff,minutesHour)
-      if hours==1:
-         hourStr=" one hour, "
-      elif hours>1:
-         hourStr=" "+str(hours)+" hours, "
-      else:
-         hourStr=""
+      hourStr = units_tweet_helper(minutesDiff,minutesHour,"hour")
+      hours = minutes_unit_calc(minutesDiff,minutesHour)
       difference=hours*minutesHour
       minutesDiff=minutesDiff-difference
-      
-      if minutesDiff==1:
-         minuteStr = " one minute, "
-      elif minutesDiff>1:
-         minutesStr=" "+str(minutesDiff)+" minutes, "
-      else:
-         minutesStr=""
 
-      if minutesDiff==1:
-         tweet="Wifi has gone down at "+downTime
-         tweetCall = "./tweet_script.py "+"\""+tweet+"\""
-         os.system(tweetCall)
-         logFile.write(toWrite)
-      elif minutesDown<targetThreshold:
-         tweet="Wifi has been down for"+weekStr+dayString+hourStr+minuteStr+"since: "+downTime
-         tweetCall = "./tweet_script.py "+"\""+tweet+"\""
-         os.system(tweetCall)
-         logFile.write(toWrite)
-      else:
-         tweet=twitterDestination + ", Wifi has been down for "+weekStr+dayStr+hourStr+minuteStr+"since: "+downTime
-         tweetCall = "./tweet_script.py " +"\""+tweet+"\""
-         os.system(tweetCall)
-         logFile.write(toWrite)
+      minuteStr=units_tweet_helper(minutesDiff,1,"minute")
+      minutes=minutes_unit_calc(minutesDiff,1)
 
-def units_tweet_helper(minutesDown,inUnit):
-   if minutesDown==inUnit:
-      return 1
-   elif minutesDown<inUnit:
-      return 0
+      tweetDate=tweet_date_formatter(weekStr,dayStr,hourStr,minuteStr,downTime)
+      if minutesDown<targetThreshold:
+         tweet=tweetDate
+      else:
+         tweet=twitterDestination+", "+tweetDate
+      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+      os.system(tweetCall)
+      logFile.write(toWrite)
+
+def tweet_date_formatter(weekStr,dayStr,hourStr,minuteStr,downTime):
+   if minuteStr!="":   
+      tweetDate="Wifi has been down for"+weekStr+dayStr+hourStr+ " and" + minuteStr+" since: "+downTime
+   elif hourStr!="": 
+      tweetDate="Wifi has been down for"+weekStr+dayStr+" and" + hourStr+" since: "+downTime
+   elif dayStr!="":
+      tweetDate="Wifi has been down for"+weekStr+" and"+ dayStr+" since: "+downTime
    else:
-      numUnit=0
-      while (numMinutes>inUnit):
-         numMinutes = numMinutes-inUnit
-         numUnit=numUnit+1
-      return numUnit
-      
+      tweetDate="Wifi has been down for"+weekStr+" since: "+downTime
+   return tweetDate
+   
+def minutes_unit_calc(minutesDown,inUnit):
+   numUnits=0
+   if minutesDown==inUnit:
+      numUnits=1
+   elif minutesDown<inUnit:
+      numUnits=0
+   else:
+      numUnits=minutesDown/inUnit
+   return numUnits
+
+def units_tweet_helper(minutesDown,inUnit,unitName):
+   numUnits=0
+   if (minutesDown/inUnit)==1:
+      tweetUnit=" one "+unitName+","
+   elif minutesDown<inUnit:
+      tweetUnit=""
+   else:
+      numUnits=minutesDown/inUnit
+      tweetUnit=" "+str(numUnits)+ " " +unitName+"s,"   
+   return tweetUnit
 
 #######
 #MAIN:#
@@ -237,6 +235,4 @@ else:
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
 if boolWifi==1:
-   # get last line of wifi csv file
-   # if over a certain value
    tweet_handler()

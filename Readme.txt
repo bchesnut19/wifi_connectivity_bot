@@ -44,6 +44,8 @@ Script will run every minute in correct directory.
 *PLANS(*=critical functionality):*
 **********************************
 -Add functionality to update webpage with log files*
--Add customizable tweet intervals
+-Add new documentation for scripts
+-Test to make sure bot functions properly when wifi 
+ actually goes down.
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
