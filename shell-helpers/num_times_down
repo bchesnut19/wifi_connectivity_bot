@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# accepts arg for minute period, calls the tweet script
+# runs at interval as defined within the config file
+
