@@ -18,3 +18,6 @@ Access Token Secret:INSERT HERE
 Tweet Interval:TIME_IN_MINUTES
 # How long before the bot tweets at account
 Target Threshold:TIME_IN_MINUTES
+
+# How often the wrapup tweet is called in days
+Wrapup Interval:TIME_IN_DAYS
