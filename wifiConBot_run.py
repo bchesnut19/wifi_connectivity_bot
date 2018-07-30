@@ -171,6 +171,10 @@ def tweet_handler():
       minuteStr=units_tweet_helper(minutesDiff,1,"minute")
       minutes=minutes_unit_calc(minutesDiff,1)
 
+      # gets variable for number of times down,
+      numDownCall="shell-helpers/num_times_down "
+      # numTimesDown=
+         
       tweetDate=tweet_date_formatter(weekStr,dayStr,hourStr,minuteStr,downTime)
       if minutesDown<targetThreshold:
          tweet=tweetDate
