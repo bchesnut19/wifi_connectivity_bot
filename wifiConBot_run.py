@@ -65,9 +65,9 @@ def wifi_restart_check():
 # Returns: int, 0 indicates connectivity on interface successful,
 # 1 indicates connectivity on interface unsuccessful
 def check_connectivity_status(hardware,etherBool):
-   googleBool=check_site_helper(hardware, 'google.com')
-   bingBool=check_site_helper(hardware,'bing.com')
-   faceBool=check_site_helper(hardware,'facebook.com')
+   googleBool=check_site_helper(hardware, '113.0.0.8')
+   bingBool=check_site_helper(hardware,'113.0.0.8')
+   faceBool=check_site_helper(hardware,'113.0.0.8')
    if googleBool==0 or bingBool==0 or faceBool==0:
       toWrite=strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+hardware+" is active\n"
       logFile.write(toWrite)
@@ -136,10 +136,7 @@ def tweet_handler():
    # if over a certain value
    twitterTargetCall = config+" 4"
    tweetIntervalCall = config+" 9"
-   targetThresholdCall = config+" 10"
-   summaryIntCall = config+" 11"
-   summaryInterval = subprocess.check_output([summaryIntCall], shell=True)
-   summaryMinutes = int(summaryInterval)*minutesDay
+   targetThresholdCall = config+" 10" 
    twitterDestination = subprocess.check_output([twitterTargetCall], shell=True)
    downTime = subprocess.check_output([dateCall], shell=True)
    tweetInterval = subprocess.check_output([tweetIntervalCall], shell=True)
@@ -149,18 +146,12 @@ def tweet_handler():
    minutesDown = subprocess.check_output([timeDownCall], shell=True)
    minutesDown = int(minutesDown)
    toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
-  
+   
    if minutesDown==1:
-      tweet = "Wifi has gone down at "+downTime
+      tweet = "Wifi has gone down at " + downTime
       tweetCall = "./tweet_script.py "+"\""+tweet+"\""
       os.system(tweetCall)
       logFile.write(toWrite)
-
-   elif minutesDown%summaryMinutes == 0:
-      summaryCall = "shell-helpers/num_times_down "+summaryInterval
-      numTimesDown = subprocess.check_output([summaryCall], shell=True)
-      tweet = "Wifi has gone down "+str(numTimesDown)+" times in the last "+str(summaryInterval)+" days."
-
    elif minutesDown%tweetInterval==0:
       weekStr = units_tweet_helper(minutesDown,minutesWeek,"week")
       weeks = minutes_unit_calc(minutesDown,minutesWeek)
@@ -235,6 +226,21 @@ def units_tweet_helper(minutesDown,inUnit,unitName):
       tweetUnit=" "+str(numUnits)+ " " +unitName+"s,"   
    return tweetUnit
 
+def summary_tweet():
+   summaryIntCall = config+" 11"
+   summaryInterval = subprocess.check_output([summaryIntCall], shell=True)
+   summaryMinutes = int(summaryInterval)*minutesDay
+   toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
+
+   # ? need to find some way to call this so it tweets at day interval
+   if summaryMinutes == 0:
+      summaryCall = "shell-helpers/num_times_down "+summaryInterval
+      numTimesDown = subprocess.check_output([summaryCall], shell=True)
+      tweet = "Wifi has gone down "+str(numTimesDown)+" times in the last "+str(summaryInterval)+" days."
+      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+      os.system(tweetCall)
+      logFile.write(toWrite)
+
 #######
 #MAIN:#
 #######
@@ -259,3 +265,7 @@ else:
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
 if boolWifi==1:
    tweet_handler()
+
+# need to find way to calculate whether summary should be tweeted
+#if summTweetBool==0:
+#   summary_tweet()

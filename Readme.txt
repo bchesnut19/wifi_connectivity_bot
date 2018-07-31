@@ -48,6 +48,8 @@ Script will run every minute in correct directory.
  tweeted, WROTE, NEED TO TEST *
 -Test to make sure bot functions properly when wifi 
  actually goes down.*
+-Figure out good way to keep track of when summary call 
+ should run
 -Add percentage for summary
 -Add new documentation for scripts
 -Attempting to remove bash script calls (probably more
