@@ -30,14 +30,22 @@ will trigger a system reboot, applying var changes.
 	 Setting up of Twitter API keys and Twitter
 target, along with wifi and ethernet name values is
 set within config/config_file.txt
+	Set up how often the Summary is tweeted with
+in config/config_file.txt, with the value specified
+in days. Create a crontab run with corresponding run
+interval, along with a 0 argument at the end. 
 
 **********************
 *EXAMPLE CRONTAB RUN:*
 **********************
-Enter crontab using "crontab -e" as root. Enter the
-following line:
-*/1 * * * * cd /SCRIPT/DIR/ && ./wifiConnBot_run.py
+For general run every X minutes, enter crontab using
+"crontab -e" as root. Enter the following line:
+*/X * * * * cd /BASE/DIR/ && ./wifiConnBot_run.py 1
 Script will run every minute in correct directory.
+
+To run the summary tweet every X days at midnight,
+enter the following line in crontab:
+0 0 */X * * cd /BASE/DIR/ && ./wifiConnBot_run.py 0
 
 
 **********************************
@@ -47,10 +55,10 @@ Script will run every minute in correct directory.
 -Fix tweet_date_formatter for when only one unit is
  tweeted, WROTE, NEED TO TEST *
 -Test to make sure bot functions properly when wifi 
- actually goes down.*
--Figure out good way to keep track of when summary call 
- should run
+ actually goes down*
+-Add to setup script to allow user to set up config
+ through command line*
 -Add percentage for summary
--Add new documentation for scripts
+-Add new documentation
 -Attempting to remove bash script calls (probably more
  trouble than its worth)
