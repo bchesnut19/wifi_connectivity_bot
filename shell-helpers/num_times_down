@@ -7,14 +7,13 @@
 # is stored
 wifiCSV="record-keeping/up_down_wifi.csv"
 
-interval="$1"
-earliestDate="$(date "+%m-%d-%Y %H:%M:%S" -d "-$interval days")"
 
-echo "$earliestDate"
+interval="$1"
+earliestDate="$(date "+%Y-%m-%d %H:%M:%S" -d "-$interval days")"
 
 counter=0
 
-cat $wifiCSV | sed '2d' | while read -r line
+cat $wifiCSV | sed '1,2d' | ( while read -r line
 do
    lineStatus=$(echo $line | awk -F "," '{print $1}')
    lineSec=$(echo $line | awk -F "," '{print $2}')
@@ -24,12 +23,16 @@ do
    lineMonth=$(echo $line | awk -F "," '{print $6}')
    lineYear=$(echo $line | awk -F "," '{print $7}')
    
-   lineDate=$(date -d "$lineYear-$lineMonth-$lineDay $lineHour:$lineMin:$lineSec")
-
-   if [ "$lineStatus"=="OFFLINE" ] && [ "$earliestDate" -lt "$lineDate"  ]
+   # has 0 for seconds to prevent from issues with time comparisons
+   lineDate=$(date -d "$lineYear-$lineMonth-$lineDay $lineHour:$lineMin:0" +'%Y-%m-%d %H:%M:%S')
+   earlDateSec=$(date -d "$earliestDate" +%s)
+   lineDateSec=$(date -d "$lineDateSec" +%s)
+   
+  
+   if [ "$lineStatus"=="OFFLINE" ] && [ "$earlDateSec" -lt "$lineDateSec"  ]
    then
       counter=$(($counter + 1))
    fi
 done
 
-echo -n "$counter"
+echo -n "$counter" )

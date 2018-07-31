@@ -137,8 +137,8 @@ def tweet_handler():
    twitterTargetCall = config+" 4"
    tweetIntervalCall = config+" 9"
    targetThresholdCall = config+" 10"
-   summaryInterval = config+" 11"
-   summaryInterval = int(summaryInterval)
+   summaryIntCall = config+" 11"
+   summaryInterval = subprocess.check_output([summaryIntCall], shell=True)
    summaryMinutes = int(summaryInterval)*minutesDay
    twitterDestination = subprocess.check_output([twitterTargetCall], shell=True)
    downTime = subprocess.check_output([dateCall], shell=True)
@@ -156,10 +156,10 @@ def tweet_handler():
       os.system(tweetCall)
       logFile.write(toWrite)
 
-   elif minutesDown%summaryInterval == 0:
-      summaryCall = "shell-helpers/num_down_times "+summaryInterval
+   elif minutesDown%summaryMinutes == 0:
+      summaryCall = "shell-helpers/num_times_down "+summaryInterval
       numTimesDown = subprocess.check_output([summaryCall], shell=True)
-      tweet = "Wifi has gone down "+str(summaryCall)+" times in the last "+str(summaryInterval)+" days."
+      tweet = "Wifi has gone down "+str(numTimesDown)+" times in the last "+str(summaryInterval)+" days."
 
    elif minutesDown%tweetInterval==0:
       weekStr = units_tweet_helper(minutesDown,minutesWeek,"week")
@@ -179,10 +179,6 @@ def tweet_handler():
 
       minuteStr=units_tweet_helper(minutesDiff,1,"minute")
       minutes=minutes_unit_calc(minutesDiff,1)
-
-      # gets variable for number of times down,
-      numDownCall="shell-helpers/num_times_down "
-      numTimesDown= subprocess.check_output()
          
       tweetDate=tweet_date_formatter(weekStr,dayStr,hourStr,minuteStr,downTime)
       if minutesDown<targetThreshold:
