@@ -32,19 +32,21 @@ target, along with wifi and ethernet name values is
 set within config/config_file.txt
 	Set up how often the Summary is tweeted with
 in config/config_file.txt, with the value specified
-in days. Create a crontab run with corresponding run
-interval, along with a 0 argument at the end. 
+in days. Crontab runs are created using the
+initial-setup/initial_config script.
 
-**********************
-*EXAMPLE CRONTAB RUN:*
-**********************
-For general run every X minutes, enter crontab using
-"crontab -e" as root. Enter the following line:
+*******************************
+*EXPLANATION OF CRONTAB LINES:*
+*******************************
+After running the initial-setup/initial_config script,
+the following lines are added to crontab. X values
+will be replaced by values input during initial_config
+run.
+
+Causes a general run every X minutes:
 */X * * * * cd /BASE/DIR/ && ./wifiConnBot_run.py 1
-Script will run every minute in correct directory.
 
-To run the summary tweet every X days at midnight,
-enter the following line in crontab:
+Causes a summary tweet every X days at midnight:
 0 0 */X * * cd /BASE/DIR/ && ./wifiConnBot_run.py 0
 
 
@@ -60,5 +62,3 @@ enter the following line in crontab:
  through command line*
 -Add percentage for summary
 -Add new documentation
--Attempting to remove bash script calls (probably more
- trouble than its worth)
