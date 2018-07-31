@@ -35,7 +35,7 @@ wifiName = subprocess.check_output([wifiNameCall], shell=True)
 minutesHour = 60
 minutesDay = 1440
 minutesWeek = 10800
-
+summary = int(sys.argv[1])
 
 #FUNCTIONS:
 ###########
@@ -229,17 +229,14 @@ def units_tweet_helper(minutesDown,inUnit,unitName):
 def summary_tweet():
    summaryIntCall = config+" 11"
    summaryInterval = subprocess.check_output([summaryIntCall], shell=True)
-   summaryMinutes = int(summaryInterval)*minutesDay
    toWrite= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
 
-   # ? need to find some way to call this so it tweets at day interval
-   if summaryMinutes == 0:
-      summaryCall = "shell-helpers/num_times_down "+summaryInterval
-      numTimesDown = subprocess.check_output([summaryCall], shell=True)
-      tweet = "Wifi has gone down "+str(numTimesDown)+" times in the last "+str(summaryInterval)+" days."
-      tweetCall = "./tweet_script.py "+"\""+tweet+"\""
-      os.system(tweetCall)
-      logFile.write(toWrite)
+   summaryCall = "shell-helpers/num_times_down "+summaryInterval
+   numTimesDown = subprocess.check_output([summaryCall], shell=True)
+   tweet = "Wifi has gone down "+str(numTimesDown)+" times in the last "+str(summaryInterval)+" days."
+   tweetCall = "./tweet_script.py "+"\""+tweet+"\""
+   os.system(tweetCall)
+   logFile.write(toWrite)
 
 #######
 #MAIN:#
@@ -267,5 +264,5 @@ if boolWifi==1:
    tweet_handler()
 
 # need to find way to calculate whether summary should be tweeted
-#if summTweetBool==0:
-#   summary_tweet()
+if summary==0:
+   summary_tweet()
