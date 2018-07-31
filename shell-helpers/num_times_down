@@ -26,7 +26,7 @@ do
    # has 0 for seconds to prevent from issues with time comparisons
    lineDate=$(date -d "$lineYear-$lineMonth-$lineDay $lineHour:$lineMin:0" +'%Y-%m-%d %H:%M:%S')
    earlDateSec=$(date -d "$earliestDate" +%s)
-   lineDateSec=$(date -d "$lineDateSec" +%s)
+   lineDateSec=$(date -d "$lineDate" +%s)
    
   
    if [ "$lineStatus"=="OFFLINE" ] && [ "$earlDateSec" -lt "$lineDateSec"  ]
