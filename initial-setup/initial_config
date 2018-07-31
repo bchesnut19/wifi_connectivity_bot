@@ -1,0 +1,40 @@
+#!/bin/bash
+# RUN AS ROOT DURING SETUP
+
+# PATH TO CONFIG FILE IN "/etc/sysctl.d/"
+kernelConfig="/etc/sysctl.d/net.conf"
+
+# Lines to be added to config
+arpFilter="net.ipv4.conf.all.arp_filter=1"
+rpFilter="net.ipv4.conf.all.rp_filter=2"
+arpAnnounce="net.ipv4.conf.all.arp_announce=1"
+arpIgnore="net.ipv4.conf.all.arp_ignore=1"
+
+# sets kernel variables to allow for connections
+# through two different interfaces.
+set_kernel()
+{
+   if grep -q "$1" $kernelConfig;
+   then
+      echo "$1" >> $kernelConfig
+   fi
+}
+
+# creates crontab lines
+crontab_lines()
+{
+   echo $(crontab -l ; echo '*/1 * * * * cd /usr/local/projects/wifi_connectivity_bot && ./wifiConnBot_run.py 1') | crontab -
+   echo $(crontab -l ; echo '* * */7 * * cd /usr/local/projects/wifi_connectivity_bot && ./wifiConnBot_run.py 0') | crontab -
+}
+
+# FIND WAY TO ACCEPT USER INPUT FOR RUN FREQUENCY
+crontab_lines
+
+touch $kernelConfig
+
+set_kernel $arpFilter
+set_kernel $rpFilter
+set_kernel $arpAnnounce
+set_kernel $arpIgnore
+
+systemctl reboot
