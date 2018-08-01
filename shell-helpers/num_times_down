@@ -11,7 +11,7 @@ wifiCSV="record-keeping/up_down_wifi.csv"
 interval="$1"
 earliestDate="$(date "+%Y-%m-%d %H:%M:%S" -d "-$interval days")"
 # assumed one down time due to the fact the script was called.
-counter=1
+counter=0
 
 cat $wifiCSV | sed '1,2d' | ( while read -r line
 do

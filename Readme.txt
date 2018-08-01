@@ -46,8 +46,8 @@ run.
 Causes a general run every X minutes:
 */X * * * * cd /BASE/DIR/ && ./wifiConnBot_run.py 1
 
-Causes a summary tweet every X days at midnight:
-0 0 */X * * cd /BASE/DIR/ && ./wifiConnBot_run.py 0
+Causes a summary tweet every X day of the week:
+0 12 * * X cd /BASE/DIR/ && ./wifiConnBot_run.py 0
 
 
 **********************************
