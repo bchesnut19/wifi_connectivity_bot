@@ -18,7 +18,7 @@ arpIgnore="net.ipv4.conf.all.arp_ignore=1"
 
 # setting variables for crontab run
 crontabNormal='*/1 * * * * cd /usr/local/projects/wifi_connectivity_bot && ./wifiConnBot_run.py 1'
-crontabSummary='* * */7 * * cd /usr/local/projects/wifi_connectivity_bot && ./wifiConnBot_run.py 0'
+crontabSummary='* * * * */7 cd /usr/local/projects/wifi_connectivity_bot && ./wifiConnBot_run.py 0'
 
 # sets kernel variables to allow for connections
 # through two different interfaces.
