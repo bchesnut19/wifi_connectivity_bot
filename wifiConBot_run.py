@@ -34,7 +34,7 @@ wifiNameCall = config+" 2"
 wifiName = subprocess.check_output([wifiNameCall], shell=True)
 minutesHour = 60
 minutesDay = 1440
-minutesWeek = 10800
+minutesWeek = 10080
 summary = int(sys.argv[1])
 
 #FUNCTIONS:
