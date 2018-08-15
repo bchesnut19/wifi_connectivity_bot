@@ -53,7 +53,7 @@ Causes a summary tweet every X day of the week:
 **********************************
 *PLANS(*=critical functionality):*
 **********************************
--Add functionality to update webpage with log files*
+-FINISH TRANSITION TO PYTHON**
 -Fix tweet_date_formatter for when only one unit is
  tweeted, WROTE, NEED TO TEST *
 -Test to make sure bot functions properly when wifi 
