@@ -5,7 +5,7 @@ import subprocess
 import socket
 import ConfigParser
 
-CONFIG_FILE = "/usr/local/projects/wifi_connectivity_bot/config/config_file.txt"
+CONFIG_FILE = "/usr/local/projects/wifi_connectivity_bot/Config/config_file.txt"
 
 def send_tweet(tweet_str):
    # reads in values from config file

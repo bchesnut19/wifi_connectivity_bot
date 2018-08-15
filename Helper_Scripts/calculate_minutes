@@ -4,7 +4,7 @@
 # Calculates time passed since wifi went down in minutes                  #
 ###########################################################################
 
-csvFile="record-keeping/up_down_wifi.csv"
+csvFile="/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv"
 
 # pipes csv file into two tail commands which first remove the first two lines,
 # then grabs the last line

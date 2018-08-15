@@ -2,11 +2,11 @@
 import csv
 import sys
 
-def get_interface_status(file_bool):
+def get_status(file_bool):
    if file_bool == 0:
-      csv_file = open('/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_eth.csv', "r")
+      csv_file = open('/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_eth.csv', "r")
    else:
-      csv_file = open('/usr/local/projects/wifi_connectivity_bot/record-keeping/up_down_eth.csv', "r")
+      csv_file = open('/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_eth.csv', "r")
    
    list_file = csv_file.readlines()
    csv_file.close()

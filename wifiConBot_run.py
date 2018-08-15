@@ -18,22 +18,21 @@ import ConfigParser
 from time import localtime, strftime
 
 # imported other python files
-import interface_csv_status
+from Helper_Scripts import interface_csv_status, return_last_date
 import tweet
 
 
-config_file = "config/config_file.txt"
+config_file = "Config/config_file.txt"
 config_reader = ConfigParser.ConfigParser()
 config_reader.read(config_file)
 
 #GLOBAL VARS:
 #############
-LOG_FILE = open("record-keeping/log_file.txt","a+")
-ETHER_CSV = open("record-keeping/up_down_eth.csv","a+")
-WIFI_CSV = open("record-keeping/up_down_wifi.csv","a+")
-# defines script paths
-dateCall = "shell-helpers/return_last_date"
-timeDownCall = "shell-helpers/calculate_minutes"
+LOG_FILE = open("Record_Keeping/log_file.txt","a+")
+ETHER_CSV = open("Record_Keeping/up_down_eth.csv","a+")
+WIFI_CSV = open("Record_Keeping/up_down_wifi.csv","a+")
+ 
+timeDownCall = "Helper_Scripts/calculate_minutes"
 
 # defining names of wifi and eth from config file
 ETHER_INTER = config_reader.get('internet-settings', 'ethernet_interface')
@@ -52,12 +51,12 @@ summary = int(sys.argv[1])
 # Description: Checks if wifi is down upon start of script, if so restarts
 # wifi interface.
 def wifi_restart_check():
-   wifi_status = interface_csv_status.get_interface_status(False)
+   wifi_status = interface_csv_status.get_status(False)
    if wifi_status == "OFFLINE":
       down_call = "/sbin/ifdown " + WIFI_NAME
-      os.system(down_call)
+      subprocess.check_call([down_call], shell=True)
       up_call = "/sbin/ifup " + WIFI_NAME
-      os.system(up_call)
+      subprocess.check_call([up_call], shell=True)
       to_write = strftime("%H:%M%S %m-%d-%Y",localtime())
       to_write = to_write+": "+"Wifi interface restarted\n"
       LOG_FILE.write(to_write)
@@ -96,7 +95,13 @@ def check_connectivity_status(hardware,ether_bool):
 # Writes: ETHER_CSV, WIFI_CSV
 def check_conn_helper(conn_bool,ether_bool):
    to_write=strftime("%S,%M,%H,%d,%m,%Y",localtime())
-   current_status = last_status.get_status(ether_bool)
+   current_status = interface_csv_status.get_status(ether_bool)
+
+   if conn_bool == True:
+      new_status = "ONLINE"
+   else:
+      new_status = "OFFLINE"
+
    if current_status == "ONLINE" and conn_bool == True:
       write = False
    elif current_status == "OFFLINE" and conn_bool == False:
@@ -106,10 +111,10 @@ def check_conn_helper(conn_bool,ether_bool):
 
    if write == True:
       if ether_bool==True:
-         to_write=current_status+to_write+"\n"
+         to_write = new_status + "," + to_write + "\n"
          ETHER_CSV.write(to_write)
       else:
-         to_write=current_status+to_write+"\n"
+         to_write = new_status + "," + to_write + "\n"
          WIFI_CSV.write(to_write)
 
 # Description: check interface helper, attempts to connect to site using
@@ -137,16 +142,16 @@ def check_site_helper(hardware,address):
 def tweet_handler():
    # get last line of wifi csv file
    # if over a certain value
-   twitter_destination = config_reader.get('tweeting-info', 'twitter_destination') 
-   downTime = subprocess.check_output([dateCall], shell=True)
-   tweet_interval = config_reader.get('tweeting-info', 'tweet_interval')
-   target_threshold = config_reader.get('tweeting-info', 'tweet_threshold')
+   twitter_destination = config_reader.get('tweeting-info', 'tweet_destination') 
+   down_time = return_last_date.get_date()
+   tweet_interval = int(config_reader.get('tweeting-info', 'tweet_interval'))
+   target_threshold = config_reader.get('tweeting-info', 'target_threshold')
    minutesDown = subprocess.check_output([timeDownCall], shell=True)
    minutesDown = int(minutesDown)
    to_write= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
    
    if minutesDown == 1:
-      tweet_str = "Wifi has gone down at " + downTime
+      tweet_str = "Wifi has gone down at " + down_time
       tweet.send_tweet(tweet_str)
       LOG_FILE.write(to_write)
    elif minutesDown % tweet_interval == 0:
@@ -178,13 +183,13 @@ def tweet_handler():
 
 def tweet_date_formatter(week_str,day_str,hour_str,minute_str,down_time):
    counter=0
-   if week_str! = "":
+   if week_str != "":
       counter = counter + 1
-   if day_str! = "":
+   if day_str != "":
       counter = counter + 1
-   if hour_str! = "":
+   if hour_str != "":
       counter = counter + 1
-   if minute_str! = "":
+   if minute_str != "":
       counter = counter + 1
    if counter > 1:
       and_str = " and"
@@ -195,7 +200,7 @@ def tweet_date_formatter(week_str,day_str,hour_str,minute_str,down_time):
       tweet_date = "Wifi has been down for" + week_str + day_str + hour_str + and_str + minute_str + " since: " + down_time
    elif hour_str != "": 
       tweet_date = "Wifi has been down for" + week_str + day_str + and_str + hour_str + " since: " + down_time
-   elif day_str! = "":
+   elif day_str != "":
       tweet_date = "Wifi has been down for" + week_str + and_str + day_str + " since: " + down_time
    else:
       tweet_date = "Wifi has been down for"+week_str+" since: "+down_time
@@ -227,7 +232,7 @@ def summary_tweet():
 
    to_write = strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + "Sent Tweet" + "\n"
 
-   summary_call = "shell-helpers/num_times_down " + summary_interval
+   summary_call = "Helper_Scripts/num_times_down " + summary_interval
    num_times_down = subprocess.check_output([summary_call], shell=True)
    tweet_str = "Wifi has gone down " + str(num_times_down) + " times in the last " + str(summary_interval) + " days."
    tweet.send_tweet(tweet_str)

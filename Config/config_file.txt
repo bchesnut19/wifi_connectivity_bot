@@ -1,0 +1,16 @@
+[internet-settings]
+wifi_interface = "INTERFACE"
+wifi_network_name = "NETWORK_NAME"
+ethernet_interface = "INTERFACE"
+
+[twitter-keys]
+consumer_key = CONS_KEY
+consumer_secret = CONS_SECR
+access_token_key = ACCESS_TOKEN_KEY
+access_token_secret = ACCESS_TOKEN_SECRET
+
+[tweeting-info]
+tweet_destination = @DESTINATION
+tweet_interval = INTERVAL_IN_MINUTES
+target_threshold = THRESHOLD_BEFORE_TWEETS_AT_TARGET_IN_MIN
+wrapup_frequency = WRAPUP_INTERVAL_IN_DAYS

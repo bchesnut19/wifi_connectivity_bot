@@ -5,7 +5,7 @@
 
 # sets the path to the csv file in which wifi down data
 # is stored
-wifiCSV="record-keeping/up_down_wifi.csv"
+wifiCSV="/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv"
 
 
 interval="$1"
