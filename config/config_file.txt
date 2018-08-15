@@ -1,23 +1,16 @@
-Config File:
-# CONNECTION INFORMATION
+[internet-settings]
+wifi_interface = "INTERFACE_NAME_HERE"
+wifi_network_name = "NETWORK_NAME_HERE"
+ethernet_interface = "INTERFACE_NAME_HERE"
 
-Wifi Interface:INSERT HERE
-Wifi Network Name:INSERT HERE
-Ethernet Interface:INSERT HERE
+[twitter-keys]
+consumer_key = "CONSUMER_KEY_HERE"
+consumer_secret = "CONSUMER_SECRET_HERE"
+access_token_key = "ACCESS_TOKEN_KEY_HERE"
+access_token_secret = "ACCESS_TOKEN_SECRET_HERE"
 
-# TWITTER INFORMATION
-
-# Account to be tweeted at when ergegious connectivity exists
-Twitter Destination:INSERT HERE
-Consumer Key:INSERT HERE
-Consumer Secret:INSERT HERE
-Access Token Key:INSERT HERE
-Access Token Secret:INSERT HERE
-
-# How often bot tweets when wifi goes down
-Tweet Interval:TIME_IN_MINUTES
-# How long before the bot tweets at account
-Target Threshold:TIME_IN_MINUTES
-
-# How often the wrapup tweet is called in days
-Wrapup Interval:TIME_IN_DAYS
+[tweeting-info]
+tweet_destination = "@TWEET_TARGET"
+tweet_interval = TIME_IN_MINUTES
+target_threshold = THRESHOLD_IN_MIN
+wrapup_frequency = THRESHOLD_IN_DAYS
