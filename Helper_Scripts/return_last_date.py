@@ -16,4 +16,4 @@ def get_date():
    else:
       last_date = date_functions.return_date(file_list[len(file_list)-1])
       return last_date
-print get_date()
+

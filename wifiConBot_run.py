@@ -18,7 +18,8 @@ import ConfigParser
 from time import localtime, strftime
 
 # imported other python files
-from Helper_Scripts import interface_csv_status, return_last_date
+from Helper_Scripts import interface_csv_status, return_last_date,\
+                           date_functions, num_times_down
 import tweet
 
 
@@ -146,8 +147,7 @@ def tweet_handler():
    down_time = return_last_date.get_date()
    tweet_interval = int(config_reader.get('tweeting-info', 'tweet_interval'))
    target_threshold = config_reader.get('tweeting-info', 'target_threshold')
-   minutesDown = subprocess.check_output([timeDownCall], shell=True)
-   minutesDown = int(minutesDown)
+   minutes_down = date_functions.calc_minutes(down_time)
    to_write= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
    
    if minutesDown == 1:
@@ -228,13 +228,13 @@ def units_tweet_helper(minutes_down,in_unit,unit_name):
    return tweet_unit
 
 def summary_tweet():
-   summary_interval = config_reader.get('tweeting-info', 'wrapup_frequency')
+   summary_interval = int( config_reader.get('tweeting-info', 'wrapup_frequency') )
+   interval_days = summary_interval * 60 * 24
 
    to_write = strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + "Sent Tweet" + "\n"
 
-   summary_call = "Helper_Scripts/num_times_down " + summary_interval
-   num_times_down = subprocess.check_output([summary_call], shell=True)
-   tweet_str = "Wifi has gone down " + str(num_times_down) + " times in the last " + str(summary_interval) + " days."
+   times_down = num_times_down.num_downs(summary_interval)
+   tweet_str = "Wifi has gone down " + str(times_down) + " times in the last " + str(summary_interval) + " days."
    tweet.send_tweet(tweet_str)
    LOG_FILE.write(to_write)
 
