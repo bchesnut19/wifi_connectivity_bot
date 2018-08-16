@@ -55,9 +55,9 @@ def wifi_restart_check():
    wifi_status = interface_csv_status.get_status(False)
    if wifi_status == "OFFLINE":
       down_call = "/sbin/ifdown " + WIFI_NAME
-      subprocess.check_call([down_call], shell=True)
+      subprocess.call([down_call], shell=True)
       up_call = "/sbin/ifup " + WIFI_NAME
-      subprocess.check_call([up_call], shell=True)
+      subprocess.call([up_call], shell=True)
       to_write = strftime("%H:%M%S %m-%d-%Y",localtime())
       to_write = to_write+": "+"Wifi interface restarted\n"
       LOG_FILE.write(to_write)
@@ -117,6 +117,8 @@ def check_conn_helper(conn_bool,ether_bool):
       else:
          to_write = new_status + "," + to_write + "\n"
          WIFI_CSV.write(to_write)
+   else:
+      pass
 
 # Description: check interface helper, attempts to connect to site using
 # input interface
@@ -147,18 +149,18 @@ def tweet_handler():
    down_time = return_last_date.get_date()
    tweet_interval = int(config_reader.get('tweeting-info', 'tweet_interval'))
    target_threshold = config_reader.get('tweeting-info', 'target_threshold')
-   minutes_down = date_functions.calc_minutes(down_time)
+   minutes_down = date_functions.calculate_minutes(down_time)
    to_write= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
-   
-   if minutesDown == 1:
-      tweet_str = "Wifi has gone down at " + down_time
+   down_time = str(down_time) 
+   if minutes_down == 0:
+      tweet_str = "Wifi has gone down at " + str(down_time)
       tweet.send_tweet(tweet_str)
       LOG_FILE.write(to_write)
-   elif minutesDown % tweet_interval == 0:
-      week_str = units_tweet_helper(minutesDown, MINUTES_WEEK, "week")
-      weeks = minutes_unit_calc(minutesDown, MINUTES_WEEK)
+   elif minutes_down % tweet_interval == 0:
+      week_str = units_tweet_helper(minutes_down, MINUTES_WEEK, "week")
+      weeks = minutes_unit_calc(minutes_down, MINUTES_WEEK)
       difference = weeks * MINUTES_WEEK
-      minutes_diff = minutesDown - difference
+      minutes_diff = minutes_down - difference
       
       day_str = units_tweet_helper(minutes_diff, MINUTES_DAY, "day")
       days = minutes_unit_calc(minutes_diff, MINUTES_DAY)
@@ -174,7 +176,7 @@ def tweet_handler():
       minutes = minutes_unit_calc(minutes_diff,1)
          
       tweet_date = tweet_date_formatter(week_str,day_str,hour_str,minute_str,down_time)
-      if minutesDown < target_threshold:
+      if minutes_down < target_threshold:
          tweet_str = tweet_date
       else:
          tweet_str = twitter_destination + ", " + tweet_date
