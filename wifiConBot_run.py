@@ -15,7 +15,7 @@ import os
 import sys
 import subprocess
 import ConfigParser
-from time import localtime, strftime
+from time import localtime, strftime, sleep
 
 # imported other python files
 from Helper_Scripts import interface_csv_status, return_last_date,\
@@ -30,10 +30,8 @@ config_reader.read(config_file)
 #GLOBAL VARS:
 #############
 LOG_FILE = open("Record_Keeping/log_file.txt","a+")
-ETHER_CSV = open("Record_Keeping/up_down_eth.csv","a+")
-WIFI_CSV = open("Record_Keeping/up_down_wifi.csv","a+")
- 
-timeDownCall = "Helper_Scripts/calculate_minutes"
+ETHER_CSV = None
+WIFI_CSV = None
 
 # defining names of wifi and eth from config file
 ETHER_INTER = config_reader.get('internet-settings', 'ethernet_interface')
@@ -54,13 +52,14 @@ summary = int(sys.argv[1])
 def wifi_restart_check():
    wifi_status = interface_csv_status.get_status(False)
    if wifi_status == "OFFLINE":
-      down_call = "/sbin/ifdown " + WIFI_NAME
+      down_call = "/sbin/ifdown " + WIFI_NAME + " > /dev/null 2>&1"
       subprocess.call([down_call], shell=True)
-      up_call = "/sbin/ifup " + WIFI_NAME
+      up_call = "/sbin/ifup " + WIFI_NAME + " > /dev/null 2>&1"
       subprocess.call([up_call], shell=True)
-      to_write = strftime("%H:%M%S %m-%d-%Y",localtime())
+      to_write = strftime("%H:%M:%S %m-%d-%Y",localtime())
       to_write = to_write+": "+"Wifi interface restarted\n"
       LOG_FILE.write(to_write)
+      sleep(5)
       return True
    else:
       return False
@@ -72,7 +71,7 @@ def wifi_restart_check():
 # Writes: LOG_FILE
 # Returns: int, 0 indicates connectivity on interface successful,
 # 1 indicates connectivity on interface unsuccessful
-def check_connectivity_status(hardware,ether_bool):
+def check_connectivity_status(hardware, ether_bool):
    google_bool = check_site_helper(hardware, 'google.com')
    bing_bool = check_site_helper(hardware,'bing.com')
    face_bool = check_site_helper(hardware,'facebook.com')
@@ -80,13 +79,13 @@ def check_connectivity_status(hardware,ether_bool):
       to_write = strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + hardware + " is active\n"
       LOG_FILE.write(to_write)
       # calls helper with bool for device and device status
-      check_conn_helper(True,ether_bool)
+      check_conn_helper(True, ether_bool)
       return True
    else:
       to_write= strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + hardware + " is down\n"
       LOG_FILE.write(to_write)
       # calls helper with bool for device and device status
-      check_conn_helper(False,ether_bool)
+      check_conn_helper(False, ether_bool)
       return False
 
 # Description: helper which deals shell calls and writing to logs
@@ -95,7 +94,7 @@ def check_connectivity_status(hardware,ether_bool):
 # status
 # Writes: ETHER_CSV, WIFI_CSV
 def check_conn_helper(conn_bool,ether_bool):
-   to_write=strftime("%S,%M,%H,%d,%m,%Y",localtime())
+   to_write = strftime("%S,%M,%H,%d,%m,%Y",localtime())
    current_status = interface_csv_status.get_status(ether_bool)
 
    if conn_bool == True:
@@ -112,13 +111,15 @@ def check_conn_helper(conn_bool,ether_bool):
 
    if write == True:
       if ether_bool==True:
+         ETHER_CSV = open( "Record_Keeping/up_down_eth.csv", "a+" )
          to_write = new_status + "," + to_write + "\n"
          ETHER_CSV.write(to_write)
+         ETHER_CSV.close()
       else:
+         WIFI_CSV = open( "Record_Keeping/up_down_eth.csv", "a+")
          to_write = new_status + "," + to_write + "\n"
          WIFI_CSV.write(to_write)
-   else:
-      pass
+         WIFI_CSV.close()
 
 # Description: check interface helper, attempts to connect to site using
 # input interface
@@ -175,7 +176,7 @@ def tweet_handler():
       minute_str = units_tweet_helper(minutes_diff,1,"minute")
       minutes = minutes_unit_calc(minutes_diff,1)
          
-      tweet_date = tweet_date_formatter(week_str,day_str,hour_str,minute_str,down_time)
+      tweet_date = tweet_date_formatter(week_str,day_str,hour_str,minute_str,str(down_time))
       if minutes_down < target_threshold:
          tweet_str = tweet_date
       else:
@@ -243,15 +244,21 @@ def summary_tweet():
 #######
 #MAIN:#
 #######
-
-# if wifi was down as of last run, restart wifi interface
-wifi_restart_check()
   
 # checks connectivity of ether
 ether_bool = check_connectivity_status(ETHER_INTER, True)
-
 # checks wifi connectivity
 wifi_bool = check_connectivity_status(WIFI_INTER, False)
+
+
+# if wifi_bool is false, restarts network and tries again
+if wifi_bool == False and ether_bool == True:
+   to_write = strftime("%H:%M:%S %m-%d-%Y", localtime()) + ": Attempting to restart \
+                                                              Wifi to fix connectivity\n"
+   wifi_restart_check()
+   
+   # sees if wifi restart did anything
+   wifi_bool = check_connectivity_status(WIFI_INTER, False)
 
 
 # Writing results of tests to log file
