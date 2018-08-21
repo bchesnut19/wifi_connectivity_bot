@@ -2,11 +2,19 @@
 import csv
 import sys
 
+PATH = None
+
+def init(path):
+   global PATH
+   PATH = path
+
 def get_status(file_bool):
    if file_bool == True:
-      csv_file = open('/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_eth.csv', "r")
+      path = PATH + "Record_Keeping/up_down_eth.csv"
+      csv_file = open(path, "r")
    else:
-      csv_file = open('/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv', "r")
+      path = PATH + "Record_Keeping/up_down_wifi.csv"
+      csv_file = open(path, "r")
    
    list_file = csv_file.readlines()
    csv_file.close()
