@@ -53,10 +53,6 @@ Causes a summary tweet every X day of the week:
 **********************************
 *PLANS(*=critical functionality):*
 **********************************
--Make path vars more portable, not require hardcode
- cd within cron_script*
--Potentially move clear_logs and inital setup to 
- python*
 -Verify initial setup scripts work*
 -Add to setup script to allow user to set up config
  through command line*
