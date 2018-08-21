@@ -263,12 +263,9 @@ wifi_bool = check_connectivity_status(WIFI_INTER, False)
 if wifi_bool == False and ether_bool == True:
    to_write = strftime("%H:%M:%S %m-%d-%Y", localtime()) + ": Attempting to restart \
                                                               Wifi to fix connectivity\n"
-# TEST COMMENTS, GOOD CODE
-#   wifi_restart_check()
-   
-   # sees if wifi restart did anything
-#   wifi_bool = check_connectivity_status(WIFI_INTER, False)
-# COMMMENTS END
+   wifi_restart_check()
+   wifi_bool = check_connectivity_status(WIFI_INTER, False)
+
 
 # Writing results of tests to log file
 if ether_bool == True and wifi_bool == True:
@@ -280,7 +277,7 @@ else:
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
 # commented out the boolEther check for testing
-if wifi_bool == False: #and ether_bool == True:
+if wifi_bool == False and ether_bool == True:
    tweet_handler()
 
 # need to find way to calculate whether summary should be tweeted
