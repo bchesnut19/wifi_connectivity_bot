@@ -2,15 +2,16 @@
 
 import sys
 import date_functions
+from contextlib import contextmanager, closing
 
 # sets the path to the csv file in which wifi down data
 # is stored
 
 
 def num_downs(interval_minutes):
-   WIFI_CSV = open("/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv","r")
-   read_in = WIFI_CSV.readlines()[2:]
-   WIFI_CSV.close()
+   WIFI_CSV = "/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv"
+   with closing ( open(WIFI_CSV, "r") ) as csv:
+      read_in = WIFI_CSV.readlines()[2:]
    counter = 0
    for line in read_in:
       date = date_functions.return_date(line)
