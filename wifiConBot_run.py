@@ -15,6 +15,7 @@ import os
 import sys
 import subprocess
 import ConfigParser
+from contextlib import contextmanager, closing
 from time import localtime, strftime, sleep
 
 # imported other python files
@@ -25,18 +26,25 @@ import tweet
 
 config_file = "Config/config_file.txt"
 config_reader = ConfigParser.ConfigParser()
-config_reader.read(config_file)
+# reads in all vars from config file
+with closing( config_reader.read(config_file) ) as config_file:
+   # defining names of wifi and eth from config file
+   ETHER_INTER = config.get('internet-settings', 'ethernet_interface')
+   WIFI_INTER = config.get('internet-settings', 'wifi_interface')
+   WIFI_NAME = config.get('internet-settings', 'wifi_network_name')
+   TWEET_DESTINATION = config.get('tweeting-info', 'tweet_destination') 
+   TWEET_INTERVAL = int(config.get('tweeting-info', 'tweet_interval'))
+   TARGET_THRESHOLD = config.get('tweeting-info', 'target_threshold')
+   SUMMARY_INTERVAL = int( config_reader.get('tweeting-info', 'wrapup_frequency') )
+
 
 #GLOBAL VARS:
 #############
-LOG_FILE = open("Record_Keeping/log_file.txt","a+")
-ETHER_CSV = None
-WIFI_CSV = None
+LOG_FILE = "Record_Keeping/log_file.txt"
+ETHER_CSV = "Record_Keeping/up_down_eth.csv"
+WIFI_CSV = "Record_Keeping/up_down_wifi.csv"
 
-# defining names of wifi and eth from config file
-ETHER_INTER = config_reader.get('internet-settings', 'ethernet_interface')
-WIFI_INTER = config_reader.get('internet-settings', 'wifi_interface')
-WIFI_NAME = config_reader.get('internet-settings', 'wifi_network_name')
+
 
 # time constants
 MINUTES_HOUR = 60
@@ -58,7 +66,8 @@ def wifi_restart_check():
       subprocess.call([up_call], shell=True)
       to_write = strftime("%H:%M:%S %m-%d-%Y",localtime())
       to_write = to_write+": "+"Wifi interface restarted\n"
-      LOG_FILE.write(to_write)
+      with closing( open(LOG_FILE,"a+") ) as log_file:
+         log_file.write(to_write)
       sleep(5)
       return True
    else:
@@ -77,13 +86,15 @@ def check_connectivity_status(hardware, ether_bool):
    face_bool = check_site_helper(hardware,'facebook.com')
    if google_bool == True or bing_bool == True or face_bool == True:
       to_write = strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + hardware + " is active\n"
-      LOG_FILE.write(to_write)
+      with closing( open(LOG_FILE,"a+") ) as log_file:
+         log_file.write(to_write)
       # calls helper with bool for device and device status
       check_conn_helper(True, ether_bool)
       return True
    else:
       to_write= strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + hardware + " is down\n"
-      LOG_FILE.write(to_write)
+      with closing( open(LOG_FILE,"a+") ) as log_file:
+         log_file.write(to_write)
       # calls helper with bool for device and device status
       check_conn_helper(False, ether_bool)
       return False
@@ -111,15 +122,13 @@ def check_conn_helper(conn_bool,ether_bool):
 
    if write == True:
       if ether_bool==True:
-         ETHER_CSV = open( "Record_Keeping/up_down_eth.csv", "a+" )
-         to_write = new_status + "," + to_write + "\n"
-         ETHER_CSV.write(to_write)
-         ETHER_CSV.close()
+         with closing( open(ETHER_CSV,"a+") ) as csv_file:
+            to_write = new_status + "," + to_write + "\n"
+            csv_file.write(to_write)
       else:
-         WIFI_CSV = open( "Record_Keeping/up_down_eth.csv", "a+")
-         to_write = new_status + "," + to_write + "\n"
-         WIFI_CSV.write(to_write)
-         WIFI_CSV.close()
+         with closing( open(WIFI_CSV,"a+") ) as csv_file:
+            to_write = new_status + "," + to_write + "\n"
+            csv_file.write(to_write)
 
 # Description: check interface helper, attempts to connect to site using
 # input interface
@@ -141,23 +150,23 @@ def check_site_helper(hardware,address):
    # if connection failed, writes to log file and returns 1
    except socket.error as err:
       to_write= strftime("%H:%M:%S %m-%d-%Y",localtime())+": " + "Error with " +hardware + " in attempting to access " + address + "\n"
-      LOG_FILE.write(to_write)
+      with closing( open(LOG_FILE,"a+") ) as log_file:
+            log_file.write(to_write)
       return False
 def tweet_handler():
    # get last line of wifi csv file
-   # if over a certain value
-   twitter_destination = config_reader.get('tweeting-info', 'tweet_destination') 
+   # if over a certain value 
    down_time = return_last_date.get_date()
-   tweet_interval = int(config_reader.get('tweeting-info', 'tweet_interval'))
-   target_threshold = config_reader.get('tweeting-info', 'target_threshold')
    minutes_down = date_functions.calculate_minutes(down_time)
    to_write= strftime("%H:%M:%S %m-%d-%Y",localtime())+": "+"Sent Tweet"+ "\n"
    down_time = str(down_time) 
    if minutes_down == 0:
       tweet_str = "Wifi has gone down at " + str(down_time)
       tweet.send_tweet(tweet_str)
-      LOG_FILE.write(to_write)
-   elif minutes_down % tweet_interval == 0:
+      with closing( open(LOG_FILE,"a+") ) as log_file:
+            log_file.write(to_write)
+          
+   elif minutes_down % TWEET_INTERVAL == 0:
       week_str = units_tweet_helper(minutes_down, MINUTES_WEEK, "week")
       weeks = minutes_unit_calc(minutes_down, MINUTES_WEEK)
       difference = weeks * MINUTES_WEEK
@@ -176,13 +185,14 @@ def tweet_handler():
       minute_str = units_tweet_helper(minutes_diff,1,"minute")
       minutes = minutes_unit_calc(minutes_diff,1)
          
-      tweet_date = tweet_date_formatter(week_str,day_str,hour_str,minute_str,str(down_time))
-      if minutes_down < target_threshold:
+      tweet_date = tweet_date_formater(week_str,day_str,hour_str,minute_str,str(down_time))
+      if minutes_down < TARGET_THRESHOLD:
          tweet_str = tweet_date
       else:
-         tweet_str = twitter_destination + ", " + tweet_date
+         tweet_str = TWEET_DESTINATION + ", " + tweet_date
       tweet.send_tweet(tweet_str)
-      LOG_FILE.write(to_write)
+      with closing( open(LOG_FILE,"a+") ) as log_file:
+            log_file.write(to_write)
 
 def tweet_date_formatter(week_str,day_str,hour_str,minute_str,down_time):
    counter=0
@@ -231,15 +241,15 @@ def units_tweet_helper(minutes_down,in_unit,unit_name):
    return tweet_unit
 
 def summary_tweet():
-   summary_interval = int( config_reader.get('tweeting-info', 'wrapup_frequency') )
-   interval_days = summary_interval * 60 * 24
+   interval_days = SUMMARY_INTERVAL * 60 * 24
 
    to_write = strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + "Sent Tweet" + "\n"
 
-   times_down = num_times_down.num_downs(summary_interval)
-   tweet_str = "Wifi has gone down " + str(times_down) + " times in the last " + str(summary_interval) + " days."
+   times_down = num_times_down.num_downs(SUMMARY_INTERVAL)
+   tweet_str = "Wifi has gone down " + str(times_down) + " times in the last " + str(SUMMARY_INTERVAL) + " days."
    tweet.send_tweet(tweet_str)
-   LOG_FILE.write(to_write)
+   with closing( open(LOG_FILE,"a+") ) as log_file:
+      log_file.write(to_write)
 
 #######
 #MAIN:#
@@ -255,8 +265,9 @@ wifi_bool = check_connectivity_status(WIFI_INTER, False)
 if wifi_bool == False and ether_bool == True:
    to_write = strftime("%H:%M:%S %m-%d-%Y", localtime()) + ": Attempting to restart \
                                                               Wifi to fix connectivity\n"
+   with closing( open(LOG_FILE,"a+") ) as log_file:
+      log_file.write(to_write)
    wifi_restart_check()
-   
    # sees if wifi restart did anything
    wifi_bool = check_connectivity_status(WIFI_INTER, False)
 
@@ -264,10 +275,12 @@ if wifi_bool == False and ether_bool == True:
 # Writing results of tests to log file
 if ether_bool == True and wifi_bool == True:
    to_write = strftime("%H:%M:%S %m-%d-%Y", localtime())+": CONNECTIONS UP\n"
-   LOG_FILE.write(to_write)
+   with closing( open(LOG_FILE,"a+") ) as log_file:
+      log_file.write(to_write)
 else:
    to_write = strftime("%H:%M:%S %m-%d-%Y", localtime())+": "+"NETWORK FAILURES DETECTED\n"
-   LOG_FILE.write(to_write)
+   with closing( open(LOG_FILE,"a+") ) as log_file:
+      log_file.write(to_write)
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
 # commented out the boolEther check for testing
