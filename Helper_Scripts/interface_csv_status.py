@@ -1,15 +1,17 @@
 #!/bin/python
 import csv
 import sys
+from contextlib import contextmanager, closing
 
 def get_status(file_bool):
    if file_bool == True:
-      csv_file = open('/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_eth.csv', "r")
+      csv_file = '/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_eth.csv'
    else:
-      csv_file = open('/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv', "r")
+      csv_file = '/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv'
    
-   list_file = csv_file.readlines()
-   csv_file.close()
+   with closing( open(csv_file, "r") ) as csv:
+      list_file = csv_file.readlines()
+      
    # grabs final line from input file
    final_line = list_file[len(list_file)-1]
    csv_row = final_line.split(",")
