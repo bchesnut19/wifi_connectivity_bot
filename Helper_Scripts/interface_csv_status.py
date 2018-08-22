@@ -10,7 +10,7 @@ def get_status(file_bool):
       csv_file = '/usr/local/projects/wifi_connectivity_bot/Record_Keeping/up_down_wifi.csv'
    
    with closing( open(csv_file, "r") ) as csv:
-      list_file = csv_file.readlines()
+      list_file = csv.readlines()
       
    # grabs final line from input file
    final_line = list_file[len(list_file)-1]
