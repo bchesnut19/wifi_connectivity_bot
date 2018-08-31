@@ -25,17 +25,18 @@ from Helper_Scripts import interface_csv_status, return_last_date,\
 
 
 config_file = "Config/config_file.txt"
-config_reader = ConfigParser.ConfigParser()
+config = ConfigParser.ConfigParser()
 # reads in all vars from config file
-with closing( config_reader.read(config_file) ) as config_file:
-   # defining names of wifi and eth from config file
-   ETHER_INTER = config.get('internet-settings', 'ethernet_interface')
-   WIFI_INTER = config.get('internet-settings', 'wifi_interface')
-   WIFI_NAME = config.get('internet-settings', 'wifi_network_name')
-   TWEET_DESTINATION = config.get('tweeting-info', 'tweet_destination') 
-   TWEET_INTERVAL = int(config.get('tweeting-info', 'tweet_interval'))
-   TARGET_THRESHOLD = config.get('tweeting-info', 'target_threshold')
-   SUMMARY_INTERVAL = int( config_reader.get('tweeting-info', 'wrapup_frequency') )
+config.read(config_file)
+
+# defining names of wifi and eth from config file
+ETHER_INTER = config.get('internet-settings', 'ethernet_interface')
+WIFI_INTER = config.get('internet-settings', 'wifi_interface')
+WIFI_NAME = config.get('internet-settings', 'wifi_network_name')
+TWEET_DESTINATION = config.get('tweeting-info', 'tweet_destination') 
+TWEET_INTERVAL = config.getint('tweeting-info', 'tweet_interval')
+TARGET_THRESHOLD = config.get('tweeting-info', 'target_threshold')
+SUMMARY_INTERVAL = config.getint('tweeting-info', 'wrapup_frequency') 
 
 
 path = os.getcwd() + "/"
@@ -134,16 +135,9 @@ def check_conn_helper(conn_bool,ether_bool):
             to_write = new_status + "," + to_write + "\n"
             csv_file.write(to_write)
       else:
-<<<<<<< HEAD
-         WIFI_CSV = open( "Record_Keeping/up_down_wifi.csv", "a+")
-         to_write = new_status + "," + to_write + "\n"
-         WIFI_CSV.write(to_write)
-         WIFI_CSV.close()
-=======
          with closing( open(WIFI_CSV,"a+") ) as csv_file:
             to_write = new_status + "," + to_write + "\n"
             csv_file.write(to_write)
->>>>>>> 7fe03caa3757684dee531aeae36e962239f7239f
 
 # Description: check interface helper, attempts to connect to site using
 # input interface
@@ -283,10 +277,6 @@ if wifi_bool == False and ether_bool == True:
    with closing( open(LOG_FILE,"a+") ) as log_file:
       log_file.write(to_write)
    wifi_restart_check()
-<<<<<<< HEAD
-=======
-   # sees if wifi restart did anything
->>>>>>> 7fe03caa3757684dee531aeae36e962239f7239f
    wifi_bool = check_connectivity_status(WIFI_INTER, False)
 
 
