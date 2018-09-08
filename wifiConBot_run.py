@@ -22,8 +22,6 @@ from time import localtime, strftime, sleep
 from Helper_Scripts import interface_csv_status, return_last_date,\
                            date_functions, num_times_down, tweet
 
-
-
 config_file = "Config/config_file.txt"
 config = ConfigParser.ConfigParser()
 # reads in all vars from config file
@@ -64,23 +62,26 @@ summary = int(sys.argv[1])
 #FUNCTIONS:
 ###########
 
-# Description: Checks if wifi is down upon start of script, if so restarts
-# wifi interface.
-def wifi_restart_check():
+def wifi_troubleshoot_check():
    wifi_status = interface_csv_status.get_status(False)
    if wifi_status == "OFFLINE":
-      down_call = "/sbin/ifdown " + WIFI_NAME + " > /dev/null 2>&1"
-      subprocess.call([down_call], shell=True)
-      up_call = "/sbin/ifup " + WIFI_NAME + " > /dev/null 2>&1"
-      subprocess.call([up_call], shell=True)
-      to_write = strftime("%H:%M:%S %m-%d-%Y",localtime())
-      to_write = to_write+": "+"Wifi interface restarted\n"
-      with closing( open(LOG_FILE,"a+") ) as log_file:
-         log_file.write(to_write)
-      sleep(5)
-      return True
-   else:
-      return False
+      wifi_restart()
+
+
+# Description: Checks if wifi is down upon start of script, if so restarts
+# wifi interface.
+def wifi_restart():
+   
+   down_call = "/sbin/ifdown " + WIFI_NAME + " > /dev/null 2>&1"
+   subprocess.call([down_call], shell=True)
+   up_call = "/sbin/ifup " + WIFI_NAME + " > /dev/null 2>&1"
+   subprocess.call([up_call], shell=True)
+   to_write = strftime("%H:%M:%S %m-%d-%Y",localtime())
+   to_write = to_write+": "+"Wifi interface restarted\n"
+   with closing( open(LOG_FILE,"a+") ) as log_file:
+      log_file.write(to_write)
+   sleep(5)
+  
 
 
 # Args: hardware = name of hardware interface, etherbool = int serving as
@@ -276,7 +277,7 @@ if wifi_bool == False and ether_bool == True:
                                                               Wifi to fix connectivity\n"
    with closing( open(LOG_FILE,"a+") ) as log_file:
       log_file.write(to_write)
-   wifi_restart_check()
+   wifi_troubleshoot_check()
    wifi_bool = check_connectivity_status(WIFI_INTER, False)
 
 
@@ -291,7 +292,6 @@ else:
       log_file.write(to_write)
 
 # calculates time period of downtime of wifi, if over certain length, calls tweet script
-# commented out the boolEther check for testing
 if wifi_bool == False and ether_bool == True:
    tweet_handler()
 
