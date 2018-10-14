@@ -57,6 +57,7 @@ WIFI_CSV = "Record_Keeping/up_down_wifi.csv"
 MINUTES_HOUR = 60
 MINUTES_DAY = 1440
 MINUTES_WEEK = 10080
+
 summary = int(sys.argv[1])
 
 #FUNCTIONS:
@@ -95,9 +96,9 @@ def check_connectivity_status(hardware, ether_bool):
    bing_bool = check_site_helper(hardware,'bing.com')
    face_bool = check_site_helper(hardware,'facebook.com')
    if google_bool == True or bing_bool == True or face_bool == True:
-      to_write = strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + hardware + " is active\n"
-      with closing( open(LOG_FILE,"a+") ) as log_file:
-         log_file.write(to_write)
+      #to_write = strftime("%H:%M:%S %m-%d-%Y",localtime()) + ": " + hardware + " is active\n"
+      #with closing( open(LOG_FILE,"a+") ) as log_file:
+      #   log_file.write(to_write)
       # calls helper with bool for device and device status
       check_conn_helper(True, ether_bool)
       return True
@@ -272,20 +273,21 @@ wifi_bool = check_connectivity_status(WIFI_INTER, False)
 
 
 # if wifi_bool is false, restarts network and tries again
-if wifi_bool == False and ether_bool == True:
-   to_write = strftime("%H:%M:%S %m-%d-%Y", localtime()) + ": Attempting to restart \
-                                                              Wifi to fix connectivity\n"
-   with closing( open(LOG_FILE,"a+") ) as log_file:
-      log_file.write(to_write)
-   wifi_troubleshoot_check()
-   wifi_bool = check_connectivity_status(WIFI_INTER, False)
+#if wifi_bool == False and ether_bool == True:
+#   to_write = strftime("%H:%M:%S %m-%d-%Y", localtime()) + ": Attempting to restart " + \
+#                                                              Wifi to fix connectivity\n"
+#   with closing( open(LOG_FILE,"a+") ) as log_file:
+#      log_file.write(to_write)
+#   wifi_troubleshoot_check()
+#   wifi_bool = check_connectivity_status(WIFI_INTER, False)
 
 
 # Writing results of tests to log file
 if ether_bool == True and wifi_bool == True:
-   to_write = strftime("%H:%M:%S %m-%d-%Y", localtime())+": CONNECTIONS UP\n"
-   with closing( open(LOG_FILE,"a+") ) as log_file:
-      log_file.write(to_write)
+   #to_write = strftime("%H:%M:%S %m-%d-%Y", localtime())+": CONNECTIONS UP\n"
+   #with closing( open(LOG_FILE,"a+") ) as log_file:
+   #   log_file.write(to_write)
+   pass
 else:
    to_write = strftime("%H:%M:%S %m-%d-%Y", localtime())+": "+"NETWORK FAILURES DETECTED\n"
    with closing( open(LOG_FILE,"a+") ) as log_file:

@@ -47,12 +47,13 @@ Causes a general run every X minutes:
 */X * * * * cd /BASE/DIR/ && ./wifiConnBot_run.py 1
 
 Causes a summary tweet every X day of the week:
-0 12 * * X cd /BASE/DIR/ && ./wifiConnBot_run.py 0
+0 0 * * X cd /BASE/DIR/ && ./wifiConnBot_run.py 0
 
 
 **********************************
 *PLANS(*=critical functionality):*
 **********************************
+-Update main script to have verbose option in log*
 -Verify initial setup scripts work*
 -Add to setup script to allow user to set up config
  through command line*

@@ -7,6 +7,8 @@
 import datetime
 import date_functions
 
+from contextlib import contextmanager, closing
+
 PATH = None
 
 def init(path):
