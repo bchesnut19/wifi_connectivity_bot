@@ -151,7 +151,7 @@ def check_site_helper(hardware,address):
    sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)   
    # sets sets socket to use hardware arg
    sock.setsockopt(socket.SOL_SOCKET, 25, hardware)
-   sock.settimeout(1)
+   sock.settimeout(2)
    # attempts to connect to input web address
    try: 
       sock.connect((address, 80))
